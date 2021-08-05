@@ -1,6 +1,9 @@
 export class Semaphore {
     private coroutines: (() => void)[] = [];
-    private resourceCount = 0;
+
+    constructor(
+        private resourceCount = 0,
+    ) { }
 
     private refresh(): void {
         if (this.resourceCount === 0) return;

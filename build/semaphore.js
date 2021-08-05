@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Semaphore = void 0;
 class Semaphore {
-    constructor() {
+    constructor(resourceCount = 0) {
+        this.resourceCount = resourceCount;
         this.coroutines = [];
-        this.resourceCount = 0;
     }
     refresh() {
         if (this.resourceCount === 0)
