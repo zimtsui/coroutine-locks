@@ -3,5 +3,6 @@ export declare class Mutex {
     private locked;
     private refresh;
     lock(): Promise<void>;
+    trylock(): void;
     unlock(): void;
 }

@@ -5,9 +5,8 @@ export class Mutex {
     private refresh(): void {
         if (this.locked) return;
         if (!this.coroutines.length) return;
+        this.coroutines.pop()!();
         this.locked = true;
-        const coroutine = this.coroutines.pop()!;
-        coroutine();
     }
 
     public async lock(): Promise<void> {
@@ -15,6 +14,11 @@ export class Mutex {
             this.coroutines.push(resolve);
             this.refresh();
         });
+    }
+
+    public trylock(): void {
+        if (this.locked) throw new Error('Already locked.');
+        this.locked = true;
     }
 
     public unlock(): void {

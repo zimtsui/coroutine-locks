@@ -8,9 +8,8 @@ export class Semaphore {
     private refresh(): void {
         if (this.resourceCount === 0) return;
         if (!this.coroutines.length) return;
+        this.coroutines.pop()!();
         this.resourceCount--;
-        const coroutine = this.coroutines.pop()!;
-        coroutine();
     }
 
     public async p(): Promise<void> {

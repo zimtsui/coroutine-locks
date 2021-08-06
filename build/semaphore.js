@@ -11,9 +11,8 @@ class Semaphore {
             return;
         if (!this.coroutines.length)
             return;
+        this.coroutines.pop()();
         this.resourceCount--;
-        const coroutine = this.coroutines.pop();
-        coroutine();
     }
     async p() {
         await new Promise(resolve => {

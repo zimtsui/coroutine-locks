@@ -1,6 +1,6 @@
 # locks
 
-## mutex
+## Mutex
 
 ```ts
 import { Mutex } from 'coroutine-locks';
@@ -9,7 +9,7 @@ await mutex.lock();
 mutex.unlock();
 ```
 
-## read-write-lock
+## Read write lock
 
 write starvation
 
@@ -21,7 +21,7 @@ await rwlock.wlock();
 rwlock.unlock();
 ```
 
-## write-read-lock
+## Write read lock
 
 write priority
 
@@ -33,7 +33,7 @@ await wrlock.wlock();
 wrlock.unlock();
 ```
 
-## semaphore
+## Semaphore
 
 ```ts
 import { Semaphore } from 'coroutine-locks';
@@ -42,7 +42,9 @@ await s.p();
 s.v();
 ```
 
-## condition variable
+## Condition variable
+
+In multi-coroutine programming, a mutex is optional because event loop cannot be switched between the conditional and the `wait`.
 
 ```ts
 import { ConditionVariable, Mutex } from 'coroutine-locks';
@@ -52,6 +54,8 @@ const mutex = new Mutex();
 await mutex.lock();
 while (!condition) await cv.wait(mutex);
 mutex.unlock();
+
+while (!condition) await cv.wait();
 
 cv.signal();
 cv.broadcast();

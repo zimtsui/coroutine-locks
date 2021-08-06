@@ -11,15 +11,19 @@ class Mutex {
             return;
         if (!this.coroutines.length)
             return;
+        this.coroutines.pop()();
         this.locked = true;
-        const coroutine = this.coroutines.pop();
-        coroutine();
     }
     async lock() {
         await new Promise(resolve => {
             this.coroutines.push(resolve);
             this.refresh();
         });
+    }
+    trylock() {
+        if (this.locked)
+            throw new Error('Already locked.');
+        this.locked = true;
     }
     unlock() {
         this.locked = false;

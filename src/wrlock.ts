@@ -5,15 +5,18 @@ export class Wrlock {
 
     private refresh(): void {
         if (this.state === -1) return;
-        while (this.readers.length && !this.writers.length) {
-            const reader = this.readers.pop()!;
-            this.state++;
-            reader();
+
+        if (!this.writers.length) {
+            this.readers.forEach(reader => {
+                reader();
+                this.state++;
+            });
+            this.readers = [];
         }
+
         if (this.state === 0 && this.writers.length) {
-            const writer = this.writers.pop()!;
+            this.writers.pop()!();
             this.state = -1;
-            writer();
         }
     }
 
@@ -24,11 +27,23 @@ export class Wrlock {
         });
     }
 
+    public tryrlock(): void {
+        if (this.state === -1) throw new Error('Already wlocked.');
+        if (this.writers.length) throw new Error('Writers in queue.');
+        this.state++;
+    }
+
     public async wlock(): Promise<void> {
         await new Promise<void>(resolve => {
             this.writers.push(resolve);
             this.refresh();
         });
+    }
+
+    public trywlock(): void {
+        if (this.state > 0) throw new Error('Already rlocked');
+        if (this.state === -1) throw new Error('Already wlocked');
+        this.state = -1;
     }
 
     public unlock(): void {

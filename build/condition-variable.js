@@ -6,20 +6,21 @@ class ConditionVariable {
         this.coroutines = [];
     }
     async wait(mutex) {
-        mutex.unlock();
+        if (mutex)
+            mutex.unlock();
         await new Promise(resolve => {
             this.coroutines.push(resolve);
         });
-        await mutex.lock();
+        if (mutex)
+            await mutex.lock();
     }
     signal() {
         if (this.coroutines.length)
             this.coroutines.pop()();
     }
     broadcast() {
-        const coroutines = this.coroutines;
+        this.coroutines.forEach(coroutine => coroutine());
         this.coroutines = [];
-        coroutines.forEach(coroutine => coroutine());
     }
 }
 exports.ConditionVariable = ConditionVariable;

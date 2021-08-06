@@ -10,15 +10,14 @@ class Rwlock {
     refresh() {
         if (this.state === -1)
             return;
-        while (this.readers.length) {
-            const reader = this.readers.pop();
-            this.state++;
+        this.readers.forEach(reader => {
             reader();
-        }
+            this.state++;
+        });
+        this.readers = [];
         if (this.state === 0 && this.writers.length) {
-            const writer = this.writers.pop();
+            this.writers.pop()();
             this.state = -1;
-            writer();
         }
     }
     async rlock() {
@@ -27,11 +26,23 @@ class Rwlock {
             this.refresh();
         });
     }
+    tryrlock() {
+        if (this.state === -1)
+            throw new Error('Already wlocked.');
+        this.state++;
+    }
     async wlock() {
         await new Promise(resolve => {
             this.writers.push(resolve);
             this.refresh();
         });
+    }
+    trywlock() {
+        if (this.state > 0)
+            throw new Error('Already rlocked');
+        if (this.state === -1)
+            throw new Error('Already wlocked');
+        this.state = -1;
     }
     unlock() {
         if (this.state > 0)
