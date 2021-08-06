@@ -1,4 +1,4 @@
-# locks
+# Coroutine locks
 
 ## Mutex
 
