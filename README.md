@@ -44,7 +44,7 @@ s.v();
 
 ## Condition variable
 
-In multi-coroutine programming, a mutex is optional because event loop cannot be switched between the conditional and the `wait`.
+In multi-coroutine programming, a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
 
 ```ts
 import { ConditionVariable, Mutex } from 'coroutine-locks';
@@ -55,6 +55,7 @@ await mutex.lock();
 while (!condition) await cv.wait(mutex);
 mutex.unlock();
 
+// mutex is optional
 while (!condition) await cv.wait();
 
 cv.signal();
