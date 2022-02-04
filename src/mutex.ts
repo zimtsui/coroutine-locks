@@ -1,12 +1,16 @@
+import chai = require('chai');
+const { assert } = chai;
+
 export class Mutex {
     private coroutines: (() => void)[] = [];
-    private locked = false;
+
+    constructor(private locked = false) { }
 
     private refresh(): void {
-        if (this.locked) return;
-        if (!this.coroutines.length) return;
-        this.coroutines.pop()!();
-        this.locked = true;
+        if (!this.locked && this.coroutines.length) {
+            this.coroutines.pop()!();
+            this.locked = true;
+        }
     }
 
     public async lock(): Promise<void> {
@@ -17,7 +21,7 @@ export class Mutex {
     }
 
     public trylock(): void {
-        if (this.locked) throw new Error('Already locked.');
+        assert(!this.lock, 'Already locked.');
         this.locked = true;
     }
 

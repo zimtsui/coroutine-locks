@@ -4,5 +4,6 @@ export declare class Semaphore {
     constructor(resourceCount?: number);
     private refresh;
     p(): Promise<void>;
+    tryp(): void;
     v(): void;
 }

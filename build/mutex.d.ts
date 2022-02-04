@@ -1,6 +1,7 @@
 export declare class Mutex {
-    private coroutines;
     private locked;
+    private coroutines;
+    constructor(locked?: boolean);
     private refresh;
     lock(): Promise<void>;
     trylock(): void;

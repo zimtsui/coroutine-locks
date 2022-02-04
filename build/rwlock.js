@@ -1,54 +1,53 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rwlock = void 0;
+const chai = require("chai");
+const { assert } = chai;
 class Rwlock {
     constructor() {
         this.readers = [];
         this.writers = [];
-        this.state = 0;
+        this.reading = 0;
+        this.writing = false;
     }
     refresh() {
-        if (this.state === -1)
+        if (this.writing)
             return;
-        this.readers.forEach(reader => {
+        this.reading += this.readers.length;
+        for (const reader of this.readers)
             reader();
-            this.state++;
-        });
         this.readers = [];
-        if (this.state === 0 && this.writers.length) {
+        if (!this.reading && this.writers.length) {
             this.writers.pop()();
-            this.state = -1;
+            this.writing = true;
         }
     }
-    async rlock() {
+    async rdlock() {
         await new Promise(resolve => {
             this.readers.push(resolve);
             this.refresh();
         });
     }
-    tryrlock() {
-        if (this.state === -1)
-            throw new Error('Already wlocked.');
-        this.state++;
+    tryrdlock() {
+        assert(!this.writing, 'Already write locked.');
+        this.reading++;
     }
-    async wlock() {
+    async wrlock() {
         await new Promise(resolve => {
             this.writers.push(resolve);
             this.refresh();
         });
     }
-    trywlock() {
-        if (this.state > 0)
-            throw new Error('Already rlocked');
-        if (this.state === -1)
-            throw new Error('Already wlocked');
-        this.state = -1;
+    trywrlock() {
+        assert(!this.reading, 'Already read locked');
+        assert(!this.writing, 'Already write locked');
+        this.writing = true;
     }
     unlock() {
-        if (this.state > 0)
-            this.state--;
-        if (this.state === -1)
-            this.state = 0;
+        if (this.reading)
+            this.reading--;
+        if (this.writing)
+            this.writing = false;
         this.refresh();
     }
 }

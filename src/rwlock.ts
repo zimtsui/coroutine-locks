@@ -1,51 +1,53 @@
+import chai = require('chai');
+const { assert } = chai;
+
 export class Rwlock {
-    private readers: (() => void)[] = [];
-    private writers: (() => void)[] = [];
-    private state = 0;
+    protected readers: (() => void)[] = [];
+    protected writers: (() => void)[] = [];
+    protected reading = 0;
+    protected writing = false;
 
-    private refresh(): void {
-        if (this.state === -1) return;
+    protected refresh(): void {
+        if (this.writing) return;
 
-        this.readers.forEach(reader => {
-            reader();
-            this.state++;
-        });
+        this.reading += this.readers.length;
+        for (const reader of this.readers) reader();
         this.readers = [];
 
-        if (this.state === 0 && this.writers.length) {
+        if (!this.reading && this.writers.length) {
             this.writers.pop()!();
-            this.state = -1;
+            this.writing = true;
         }
     }
 
-    public async rlock(): Promise<void> {
+    public async rdlock(): Promise<void> {
         await new Promise<void>(resolve => {
             this.readers.push(resolve);
             this.refresh();
         });
     }
 
-    public tryrlock(): void {
-        if (this.state === -1) throw new Error('Already wlocked.');
-        this.state++;
+    public tryrdlock(): void {
+        assert(!this.writing, 'Already write locked.');
+        this.reading++;
     }
 
-    public async wlock(): Promise<void> {
+    public async wrlock(): Promise<void> {
         await new Promise<void>(resolve => {
             this.writers.push(resolve);
             this.refresh();
         });
     }
 
-    public trywlock(): void {
-        if (this.state > 0) throw new Error('Already rlocked');
-        if (this.state === -1) throw new Error('Already wlocked');
-        this.state = -1;
+    public trywrlock(): void {
+        assert(!this.reading, 'Already read locked');
+        assert(!this.writing, 'Already write locked');
+        this.writing = true;
     }
 
     public unlock(): void {
-        if (this.state > 0) this.state--;
-        if (this.state === -1) this.state = 0;
+        if (this.reading) this.reading--;
+        if (this.writing) this.writing = false;
         this.refresh();
     }
 }

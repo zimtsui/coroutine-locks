@@ -1,11 +1,12 @@
 export declare class Rwlock {
-    private readers;
-    private writers;
-    private state;
-    private refresh;
-    rlock(): Promise<void>;
-    tryrlock(): void;
-    wlock(): Promise<void>;
-    trywlock(): void;
+    protected readers: (() => void)[];
+    protected writers: (() => void)[];
+    protected reading: number;
+    protected writing: boolean;
+    protected refresh(): void;
+    rdlock(): Promise<void>;
+    tryrdlock(): void;
+    wrlock(): Promise<void>;
+    trywrlock(): void;
     unlock(): void;
 }

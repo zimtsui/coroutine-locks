@@ -1,15 +1,16 @@
+import chai = require('chai');
+const { assert } = chai;
+
 export class Semaphore {
     private coroutines: (() => void)[] = [];
 
-    constructor(
-        private resourceCount = 0,
-    ) { }
+    constructor(private resourceCount = 0) { }
 
     private refresh(): void {
-        if (this.resourceCount === 0) return;
-        if (!this.coroutines.length) return;
-        this.coroutines.pop()!();
-        this.resourceCount--;
+        if (this.resourceCount && this.coroutines.length) {
+            this.coroutines.pop()!();
+            this.resourceCount--;
+        }
     }
 
     public async p(): Promise<void> {
@@ -17,6 +18,11 @@ export class Semaphore {
             this.coroutines.push(resolve);
             this.refresh();
         });
+    }
+
+    public tryp(): void {
+        assert(this.resourceCount, 'No resource.');
+        this.resourceCount--;
     }
 
     public v(): void {

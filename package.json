@@ -8,5 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b ./src/tsconfig.json"
   },
-  "author": "Zim"
+  "author": "Zim",
+  "dependencies": {
+    "@types/chai": "^4.3.0",
+    "chai": "^4.3.6"
+  }
 }
