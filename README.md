@@ -5,7 +5,7 @@
 ```ts
 import { Mutex } from 'coroutine-locks';
 const mutex = new Mutex();
-await mutex.lock();
+await mutex.lock(false);
 mutex.unlock();
 ```
 
@@ -16,8 +16,9 @@ write starvation
 ```ts
 import { Rwlock } from 'coroutine-locks';
 const rwlock = new Rwlock();
-await rwlock.rlock();
-await rwlock.wlock();
+await rwlock.rdlock();
+rwlock.tryrdlock();
+await rwlock.wrlock();
 rwlock.unlock();
 ```
 
@@ -28,8 +29,9 @@ write priority
 ```ts
 import { Wrlock } from 'coroutine-locks';
 const wrlock = new Wrlock();
-await wrlock.rlock();
-await wrlock.wlock();
+await wrlock.rdlock();
+wrlock.tryrdlock();
+await wrlock.wrlock();
 wrlock.unlock();
 ```
 
@@ -39,6 +41,7 @@ wrlock.unlock();
 import { Semaphore } from 'coroutine-locks';
 const s = new Semaphore(1);
 await s.p();
+s.tryp();
 s.v();
 ```
 
