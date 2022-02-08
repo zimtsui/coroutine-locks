@@ -53,6 +53,8 @@ export class Rwlock {
 
     public throw(err: Error): void {
         for (const { reject } of this.readers) reject(err);
+        this.readers = [];
         for (const { reject } of this.writers) reject(err);
+        this.writers = [];
     }
 }

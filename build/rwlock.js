@@ -52,8 +52,10 @@ class Rwlock {
     throw(err) {
         for (const { reject } of this.readers)
             reject(err);
+        this.readers = [];
         for (const { reject } of this.writers)
             reject(err);
+        this.writers = [];
     }
 }
 exports.Rwlock = Rwlock;

@@ -24,5 +24,6 @@ export class ConditionVariable {
 
     public throw(err: Error): void {
         for (const { reject } of this.coroutines) reject(err);
+        this.coroutines = [];
     }
 }

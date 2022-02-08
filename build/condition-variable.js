@@ -26,6 +26,7 @@ class ConditionVariable {
     throw(err) {
         for (const { reject } of this.coroutines)
             reject(err);
+        this.coroutines = [];
     }
 }
 exports.ConditionVariable = ConditionVariable;

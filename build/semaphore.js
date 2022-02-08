@@ -30,6 +30,7 @@ class Semaphore {
     throw(err) {
         for (const { reject } of this.coroutines)
             reject(err);
+        this.coroutines = [];
     }
 }
 exports.Semaphore = Semaphore;

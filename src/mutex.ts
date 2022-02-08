@@ -33,5 +33,6 @@ export class Mutex {
 
     public throw(err: Error): void {
         for (const { reject } of this.coroutines) reject(err);
+        this.coroutines = [];
     }
 }
