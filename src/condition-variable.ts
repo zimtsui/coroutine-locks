@@ -1,23 +1,28 @@
 import { Mutex } from './mutex';
+import { Pair } from './pair';
 
 export class ConditionVariable {
-    private coroutines: (() => void)[] = [];
+    private coroutines: Pair[] = [];
 
     public async wait(mutex?: Mutex): Promise<void> {
         if (mutex) mutex.unlock();
-        await new Promise<void>(resolve => {
-            this.coroutines.push(resolve);
+        await new Promise<void>((resolve, reject) => {
+            this.coroutines.push({ resolve, reject });
         });
         if (mutex) await mutex.lock();
     }
 
     public signal(): void {
         if (this.coroutines.length)
-            this.coroutines.pop()!();
+            this.coroutines.pop()!.resolve();
     }
 
     public broadcast(): void {
-        this.coroutines.forEach(coroutine => coroutine());
+        for (const { resolve } of this.coroutines) resolve();
         this.coroutines = [];
+    }
+
+    public throw(err: Error): void {
+        for (const { reject } of this.coroutines) reject(err);
     }
 }

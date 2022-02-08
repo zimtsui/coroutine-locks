@@ -6,4 +6,5 @@ export declare class Mutex {
     lock(): Promise<void>;
     trylock(): void;
     unlock(): void;
+    throw(err: Error): void;
 }

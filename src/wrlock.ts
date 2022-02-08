@@ -6,10 +6,10 @@ export class Wrlock extends Rwlock {
 
         if (!this.writers.length) {
             this.reading += this.readers.length;
-            for (const reader of this.readers) reader();
+            for (const { resolve } of this.readers) resolve();
             this.readers = [];
         } else if (!this.reading) {
-            this.writers.pop()!();
+            this.writers.pop()!.resolve();
             this.writing = true;
         }
     }

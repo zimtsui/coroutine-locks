@@ -8,19 +8,24 @@ class ConditionVariable {
     async wait(mutex) {
         if (mutex)
             mutex.unlock();
-        await new Promise(resolve => {
-            this.coroutines.push(resolve);
+        await new Promise((resolve, reject) => {
+            this.coroutines.push({ resolve, reject });
         });
         if (mutex)
             await mutex.lock();
     }
     signal() {
         if (this.coroutines.length)
-            this.coroutines.pop()();
+            this.coroutines.pop().resolve();
     }
     broadcast() {
-        this.coroutines.forEach(coroutine => coroutine());
+        for (const { resolve } of this.coroutines)
+            resolve();
         this.coroutines = [];
+    }
+    throw(err) {
+        for (const { reject } of this.coroutines)
+            reject(err);
     }
 }
 exports.ConditionVariable = ConditionVariable;

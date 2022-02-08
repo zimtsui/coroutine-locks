@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mutex = void 0;
-const chai = require("chai");
-const { assert } = chai;
+const assert_1 = require("./assert");
 class Mutex {
     constructor(locked = false) {
         this.locked = locked;
@@ -10,23 +9,28 @@ class Mutex {
     }
     refresh() {
         if (!this.locked && this.coroutines.length) {
-            this.coroutines.pop()();
+            this.coroutines.pop().resolve();
             this.locked = true;
         }
     }
     async lock() {
-        await new Promise(resolve => {
-            this.coroutines.push(resolve);
+        await new Promise((resolve, reject) => {
+            this.coroutines.push({ resolve, reject });
             this.refresh();
         });
     }
     trylock() {
-        assert(!this.lock, 'Already locked.');
+        (0, assert_1.assert)(!this.lock, 'Already locked.');
         this.locked = true;
     }
     unlock() {
+        (0, assert_1.assert)(this.lock);
         this.locked = false;
         this.refresh();
+    }
+    throw(err) {
+        for (const { reject } of this.coroutines)
+            reject(err);
     }
 }
 exports.Mutex = Mutex;

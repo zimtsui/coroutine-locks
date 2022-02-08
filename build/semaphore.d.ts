@@ -6,4 +6,5 @@ export declare class Semaphore {
     p(): Promise<void>;
     tryp(): void;
     v(): void;
+    throw(err: Error): void;
 }

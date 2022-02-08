@@ -1,21 +1,21 @@
-import chai = require('chai');
-const { assert } = chai;
+import { assert } from './assert';
+import { Pair } from './pair';
 
 export class Semaphore {
-    private coroutines: (() => void)[] = [];
+    private coroutines: Pair[] = [];
 
     constructor(private resourceCount = 0) { }
 
     private refresh(): void {
         if (this.resourceCount && this.coroutines.length) {
-            this.coroutines.pop()!();
+            this.coroutines.pop()!.resolve();
             this.resourceCount--;
         }
     }
 
     public async p(): Promise<void> {
-        await new Promise<void>(resolve => {
-            this.coroutines.push(resolve);
+        await new Promise<void>((resolve, reject) => {
+            this.coroutines.push({ resolve, reject });
             this.refresh();
         });
     }
@@ -28,5 +28,9 @@ export class Semaphore {
     public v(): void {
         this.resourceCount++;
         this.refresh();
+    }
+
+    public throw(err: Error): void {
+        for (const { reject } of this.coroutines) reject(err);
     }
 }

@@ -4,4 +4,5 @@ export declare class ConditionVariable {
     wait(mutex?: Mutex): Promise<void>;
     signal(): void;
     broadcast(): void;
+    throw(err: Error): void;
 }

@@ -1,21 +1,21 @@
-import chai = require('chai');
-const { assert } = chai;
+import { assert } from './assert';
+import { Pair } from './pair';
 
 export class Mutex {
-    private coroutines: (() => void)[] = [];
+    private coroutines: Pair[] = [];
 
     constructor(private locked = false) { }
 
     private refresh(): void {
         if (!this.locked && this.coroutines.length) {
-            this.coroutines.pop()!();
+            this.coroutines.pop()!.resolve();
             this.locked = true;
         }
     }
 
     public async lock(): Promise<void> {
-        await new Promise<void>(resolve => {
-            this.coroutines.push(resolve);
+        await new Promise<void>((resolve, reject) => {
+            this.coroutines.push({ resolve, reject });
             this.refresh();
         });
     }
@@ -26,7 +26,12 @@ export class Mutex {
     }
 
     public unlock(): void {
+        assert(this.lock);
         this.locked = false;
         this.refresh();
+    }
+
+    public throw(err: Error): void {
+        for (const { reject } of this.coroutines) reject(err);
     }
 }

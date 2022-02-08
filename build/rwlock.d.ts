@@ -1,6 +1,7 @@
+import { Pair } from './pair';
 export declare class Rwlock {
-    protected readers: (() => void)[];
-    protected writers: (() => void)[];
+    protected readers: Pair[];
+    protected writers: Pair[];
     protected reading: number;
     protected writing: boolean;
     protected refresh(): void;
@@ -9,4 +10,5 @@ export declare class Rwlock {
     wrlock(): Promise<void>;
     trywrlock(): void;
     unlock(): void;
+    throw(err: Error): void;
 }
