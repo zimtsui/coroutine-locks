@@ -1,23 +1,24 @@
-import { assert } from './assert';
-import { Pair } from './pair';
+import assert = require('assert');
+import { PublicManualPromise } from './public-manual-promise';
+
 
 export class Semaphore {
-    private coroutines: Pair[] = [];
+    private consumers: PublicManualPromise[] = [];
 
     constructor(private resourceCount = 0) { }
 
     private refresh(): void {
-        if (this.resourceCount && this.coroutines.length) {
-            this.coroutines.pop()!.resolve();
+        if (this.resourceCount && this.consumers.length) {
+            this.consumers.pop()!.resolve();
             this.resourceCount--;
         }
     }
 
     public async p(): Promise<void> {
-        await new Promise<void>((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-            this.refresh();
-        });
+        const consumer = new PublicManualPromise();
+        this.consumers.push(consumer);
+        this.refresh();
+        await consumer;
     }
 
     public tryp(): void {
@@ -31,7 +32,7 @@ export class Semaphore {
     }
 
     public throw(err: Error): void {
-        for (const { reject } of this.coroutines) reject(err);
-        this.coroutines = [];
+        for (const consumer of this.consumers) consumer.reject(err);
+        this.consumers = [];
     }
 }

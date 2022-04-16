@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rwlock = void 0;
-const assert_1 = require("./assert");
+const assert = require("assert");
+const public_manual_promise_1 = require("./public-manual-promise");
 class Rwlock {
     constructor() {
         this.readers = [];
@@ -13,8 +14,8 @@ class Rwlock {
         if (this.writing)
             return;
         this.reading += this.readers.length;
-        for (const { resolve } of this.readers)
-            resolve();
+        for (const reader of this.readers)
+            reader.resolve();
         this.readers = [];
         if (!this.reading && this.writers.length) {
             this.writers.pop().resolve();
@@ -22,24 +23,24 @@ class Rwlock {
         }
     }
     async rdlock() {
-        await new Promise((resolve, reject) => {
-            this.readers.push({ resolve, reject });
-            this.refresh();
-        });
+        const reader = new public_manual_promise_1.PublicManualPromise();
+        this.readers.push(reader);
+        this.refresh();
+        await reader;
     }
     tryrdlock() {
-        (0, assert_1.assert)(!this.writing, 'Already write locked.');
+        assert(!this.writing, 'Already write locked.');
         this.reading++;
     }
     async wrlock() {
-        await new Promise((resolve, reject) => {
-            this.writers.push({ resolve, reject });
-            this.refresh();
-        });
+        const writer = new public_manual_promise_1.PublicManualPromise();
+        this.writers.push(writer);
+        this.refresh();
+        await writer;
     }
     trywrlock() {
-        (0, assert_1.assert)(!this.reading, 'Already read locked');
-        (0, assert_1.assert)(!this.writing, 'Already write locked');
+        assert(!this.reading, 'Already read locked');
+        assert(!this.writing, 'Already write locked');
         this.writing = true;
     }
     unlock() {
@@ -50,11 +51,11 @@ class Rwlock {
         this.refresh();
     }
     throw(err) {
-        for (const { reject } of this.readers)
-            reject(err);
+        for (const reader of this.readers)
+            reader.reject(err);
         this.readers = [];
-        for (const { reject } of this.writers)
-            reject(err);
+        for (const writer of this.writers)
+            writer.reject(err);
         this.writers = [];
     }
 }

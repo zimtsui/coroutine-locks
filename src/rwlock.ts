@@ -1,9 +1,10 @@
-import { assert } from './assert';
-import { Pair } from './pair';
+import assert = require('assert');
+import { PublicManualPromise } from './public-manual-promise';
+
 
 export class Rwlock {
-    protected readers: Pair[] = [];
-    protected writers: Pair[] = [];
+    protected readers: PublicManualPromise[] = [];
+    protected writers: PublicManualPromise[] = [];
     protected reading = 0;
     protected writing = false;
 
@@ -11,7 +12,7 @@ export class Rwlock {
         if (this.writing) return;
 
         this.reading += this.readers.length;
-        for (const { resolve } of this.readers) resolve();
+        for (const reader of this.readers) reader.resolve();
         this.readers = [];
 
         if (!this.reading && this.writers.length) {
@@ -21,10 +22,10 @@ export class Rwlock {
     }
 
     public async rdlock(): Promise<void> {
-        await new Promise<void>((resolve, reject) => {
-            this.readers.push({ resolve, reject });
-            this.refresh();
-        });
+        const reader = new PublicManualPromise();
+        this.readers.push(reader);
+        this.refresh();
+        await reader;
     }
 
     public tryrdlock(): void {
@@ -33,10 +34,10 @@ export class Rwlock {
     }
 
     public async wrlock(): Promise<void> {
-        await new Promise<void>((resolve, reject) => {
-            this.writers.push({ resolve, reject });
-            this.refresh();
-        });
+        const writer = new PublicManualPromise();
+        this.writers.push(writer);
+        this.refresh();
+        await writer;
     }
 
     public trywrlock(): void {
@@ -52,9 +53,9 @@ export class Rwlock {
     }
 
     public throw(err: Error): void {
-        for (const { reject } of this.readers) reject(err);
+        for (const reader of this.readers) reader.reject(err);
         this.readers = [];
-        for (const { reject } of this.writers) reject(err);
+        for (const writer of this.writers) writer.reject(err);
         this.writers = [];
     }
 }

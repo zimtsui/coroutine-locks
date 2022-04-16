@@ -1,6 +1,6 @@
 export declare class Semaphore {
     private resourceCount;
-    private coroutines;
+    private consumers;
     constructor(resourceCount?: number);
     private refresh;
     p(): Promise<void>;

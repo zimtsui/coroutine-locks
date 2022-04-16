@@ -1,23 +1,24 @@
-import { assert } from './assert';
-import { Pair } from './pair';
+import assert = require('assert');
+import { PublicManualPromise } from './public-manual-promise';
+
 
 export class Mutex {
-    private coroutines: Pair[] = [];
+    private users: PublicManualPromise[] = [];
 
     constructor(private locked = false) { }
 
     private refresh(): void {
-        if (!this.locked && this.coroutines.length) {
-            this.coroutines.pop()!.resolve();
+        if (!this.locked && this.users.length) {
+            this.users.pop()!.resolve();
             this.locked = true;
         }
     }
 
     public async lock(): Promise<void> {
-        await new Promise<void>((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-            this.refresh();
-        });
+        const user = new PublicManualPromise();
+        this.users.push(user);
+        this.refresh();
+        await user;
     }
 
     public trylock(): void {
@@ -32,7 +33,7 @@ export class Mutex {
     }
 
     public throw(err: Error): void {
-        for (const { reject } of this.coroutines) reject(err);
-        this.coroutines = [];
+        for (const user of this.users) user.reject(err);
+        this.users = [];
     }
 }

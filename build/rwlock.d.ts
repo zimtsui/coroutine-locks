@@ -1,7 +1,7 @@
-import { Pair } from './pair';
+import { PublicManualPromise } from './public-manual-promise';
 export declare class Rwlock {
-    protected readers: Pair[];
-    protected writers: Pair[];
+    protected readers: PublicManualPromise[];
+    protected writers: PublicManualPromise[];
     protected reading: number;
     protected writing: boolean;
     protected refresh(): void;

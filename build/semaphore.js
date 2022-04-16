@@ -1,26 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Semaphore = void 0;
-const assert_1 = require("./assert");
+const assert = require("assert");
+const public_manual_promise_1 = require("./public-manual-promise");
 class Semaphore {
     constructor(resourceCount = 0) {
         this.resourceCount = resourceCount;
-        this.coroutines = [];
+        this.consumers = [];
     }
     refresh() {
-        if (this.resourceCount && this.coroutines.length) {
-            this.coroutines.pop().resolve();
+        if (this.resourceCount && this.consumers.length) {
+            this.consumers.pop().resolve();
             this.resourceCount--;
         }
     }
     async p() {
-        await new Promise((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-            this.refresh();
-        });
+        const consumer = new public_manual_promise_1.PublicManualPromise();
+        this.consumers.push(consumer);
+        this.refresh();
+        await consumer;
     }
     tryp() {
-        (0, assert_1.assert)(this.resourceCount, 'No resource.');
+        assert(this.resourceCount, 'No resource.');
         this.resourceCount--;
     }
     v() {
@@ -28,9 +29,9 @@ class Semaphore {
         this.refresh();
     }
     throw(err) {
-        for (const { reject } of this.coroutines)
-            reject(err);
-        this.coroutines = [];
+        for (const consumer of this.consumers)
+            consumer.reject(err);
+        this.consumers = [];
     }
 }
 exports.Semaphore = Semaphore;

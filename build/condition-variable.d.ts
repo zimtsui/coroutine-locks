@@ -1,6 +1,6 @@
 import { Mutex } from './mutex';
 export declare class ConditionVariable {
-    private coroutines;
+    private listeners;
     wait(mutex?: Mutex): Promise<void>;
     signal(): void;
     broadcast(): void;

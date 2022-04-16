@@ -1,37 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mutex = void 0;
-const assert_1 = require("./assert");
+const assert = require("assert");
+const public_manual_promise_1 = require("./public-manual-promise");
 class Mutex {
     constructor(locked = false) {
         this.locked = locked;
-        this.coroutines = [];
+        this.users = [];
     }
     refresh() {
-        if (!this.locked && this.coroutines.length) {
-            this.coroutines.pop().resolve();
+        if (!this.locked && this.users.length) {
+            this.users.pop().resolve();
             this.locked = true;
         }
     }
     async lock() {
-        await new Promise((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-            this.refresh();
-        });
+        const user = new public_manual_promise_1.PublicManualPromise();
+        this.users.push(user);
+        this.refresh();
+        await user;
     }
     trylock() {
-        (0, assert_1.assert)(!this.lock, 'Already locked.');
+        assert(!this.lock, 'Already locked.');
         this.locked = true;
     }
     unlock() {
-        (0, assert_1.assert)(this.lock);
+        assert(this.lock);
         this.locked = false;
         this.refresh();
     }
     throw(err) {
-        for (const { reject } of this.coroutines)
-            reject(err);
-        this.coroutines = [];
+        for (const user of this.users)
+            user.reject(err);
+        this.users = [];
     }
 }
 exports.Mutex = Mutex;

@@ -1,32 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConditionVariable = void 0;
+const public_manual_promise_1 = require("./public-manual-promise");
 class ConditionVariable {
     constructor() {
-        this.coroutines = [];
+        this.listeners = [];
     }
     async wait(mutex) {
         if (mutex)
             mutex.unlock();
-        await new Promise((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-        });
+        const listener = new public_manual_promise_1.PublicManualPromise();
+        this.listeners.push(listener);
+        await listener;
         if (mutex)
             await mutex.lock();
     }
     signal() {
-        if (this.coroutines.length)
-            this.coroutines.pop().resolve();
+        if (this.listeners.length)
+            this.listeners.pop().resolve();
     }
     broadcast() {
-        for (const { resolve } of this.coroutines)
-            resolve();
-        this.coroutines = [];
+        for (const listener of this.listeners)
+            listener.resolve();
+        this.listeners = [];
     }
     throw(err) {
-        for (const { reject } of this.coroutines)
-            reject(err);
-        this.coroutines = [];
+        for (const listener of this.listeners)
+            listener.reject(err);
+        this.listeners = [];
     }
 }
 exports.ConditionVariable = ConditionVariable;

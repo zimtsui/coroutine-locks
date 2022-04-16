@@ -1,29 +1,30 @@
 import { Mutex } from './mutex';
-import { Pair } from './pair';
+import { PublicManualPromise } from './public-manual-promise';
+
 
 export class ConditionVariable {
-    private coroutines: Pair[] = [];
+    private listeners: PublicManualPromise[] = [];
 
     public async wait(mutex?: Mutex): Promise<void> {
         if (mutex) mutex.unlock();
-        await new Promise<void>((resolve, reject) => {
-            this.coroutines.push({ resolve, reject });
-        });
+        const listener = new PublicManualPromise();
+        this.listeners.push(listener);
+        await listener;
         if (mutex) await mutex.lock();
     }
 
     public signal(): void {
-        if (this.coroutines.length)
-            this.coroutines.pop()!.resolve();
+        if (this.listeners.length)
+            this.listeners.pop()!.resolve();
     }
 
     public broadcast(): void {
-        for (const { resolve } of this.coroutines) resolve();
-        this.coroutines = [];
+        for (const listener of this.listeners) listener.resolve();
+        this.listeners = [];
     }
 
     public throw(err: Error): void {
-        for (const { reject } of this.coroutines) reject(err);
-        this.coroutines = [];
+        for (const listener of this.listeners) listener.reject(err);
+        this.listeners = [];
     }
 }
