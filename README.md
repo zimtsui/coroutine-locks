@@ -47,7 +47,7 @@ s.v();
 
 ## Condition variable
 
-In multi-coroutine programming, a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
+In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
 
 ```ts
 import { ConditionVariable, Mutex } from 'coroutine-locks';
