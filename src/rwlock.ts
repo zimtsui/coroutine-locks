@@ -2,6 +2,9 @@ import assert = require('assert');
 import { PublicManualPromise } from './public-manual-promise';
 
 
+/**
+ * Read write lock - Write starvation
+ */
 export class Rwlock {
     protected readers: PublicManualPromise[] = [];
     protected writers: PublicManualPromise[] = [];

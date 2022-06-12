@@ -1,4 +1,7 @@
 import { PublicManualPromise } from './public-manual-promise';
+/**
+ * Read write lock - Write starvation
+ */
 export declare class Rwlock {
     protected readers: PublicManualPromise[];
     protected writers: PublicManualPromise[];

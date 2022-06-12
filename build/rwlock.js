@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rwlock = void 0;
 const assert = require("assert");
 const public_manual_promise_1 = require("./public-manual-promise");
+/**
+ * Read write lock - Write starvation
+ */
 class Rwlock {
     constructor() {
         this.readers = [];

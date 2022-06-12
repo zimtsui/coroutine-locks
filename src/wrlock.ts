@@ -1,5 +1,9 @@
 import { Rwlock } from './rwlock';
 
+
+/**
+ * Write read lock - Write priority
+ */
 export class Wrlock extends Rwlock {
     protected refresh(): void {
         if (this.writing) return;

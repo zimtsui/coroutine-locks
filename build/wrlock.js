@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Wrlock = void 0;
 const rwlock_1 = require("./rwlock");
+/**
+ * Write read lock - Write priority
+ */
 class Wrlock extends rwlock_1.Rwlock {
     refresh() {
         if (this.writing)
