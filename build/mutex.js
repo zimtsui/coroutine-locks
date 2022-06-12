@@ -20,8 +20,11 @@ class Mutex {
         this.refresh();
         await user;
     }
+    /**
+     * @throws {@link TryLockError}
+     */
     trylock() {
-        assert(!this.lock, 'Already locked.');
+        assert(!this.lock, new Error());
         this.locked = true;
     }
     unlock() {

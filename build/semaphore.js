@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Semaphore = void 0;
 const assert = require("assert");
 const public_manual_promise_1 = require("./public-manual-promise");
+const errors_1 = require("./errors");
 class Semaphore {
     constructor(resourceCount = 0) {
         this.resourceCount = resourceCount;
@@ -20,8 +21,11 @@ class Semaphore {
         this.refresh();
         await consumer;
     }
+    /**
+     * @throws {@link TryLockError}
+     */
     tryp() {
-        assert(this.resourceCount, 'No resource.');
+        assert(this.resourceCount, new errors_1.TryLockError());
         this.resourceCount--;
     }
     v() {

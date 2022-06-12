@@ -1,5 +1,6 @@
 import assert = require('assert');
 import { PublicManualPromise } from './public-manual-promise';
+import { TryLockError } from './errors';
 
 
 export class Semaphore {
@@ -21,8 +22,14 @@ export class Semaphore {
         await consumer;
     }
 
+    /**
+     * @throws {@link TryLockError}
+     */
     public tryp(): void {
-        assert(this.resourceCount, 'No resource.');
+        assert(
+            this.resourceCount,
+            new TryLockError(),
+        );
         this.resourceCount--;
     }
 

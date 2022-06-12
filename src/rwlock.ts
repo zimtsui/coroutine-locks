@@ -1,5 +1,6 @@
 import assert = require('assert');
 import { PublicManualPromise } from './public-manual-promise';
+import { TryLockError } from './errors';
 
 
 /**
@@ -31,8 +32,14 @@ export class Rwlock {
         await reader;
     }
 
+    /**
+     * @throws {@link TryLockError}
+     */
     public tryrdlock(): void {
-        assert(!this.writing, 'Already write locked.');
+        assert(
+            !this.writing,
+            new TryLockError(),
+        );
         this.reading++;
     }
 
@@ -43,9 +50,18 @@ export class Rwlock {
         await writer;
     }
 
+    /**
+     * @throws {@link TryLockError}
+     */
     public trywrlock(): void {
-        assert(!this.reading, 'Already read locked');
-        assert(!this.writing, 'Already write locked');
+        assert(
+            !this.reading,
+            new TryLockError(),
+        );
+        assert(
+            !this.writing,
+            new TryLockError(),
+        );
         this.writing = true;
     }
 

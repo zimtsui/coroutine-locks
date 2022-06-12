@@ -1,5 +1,6 @@
 import assert = require('assert');
 import { PublicManualPromise } from './public-manual-promise';
+import { TryLockError } from './errors';
 
 
 export class Mutex {
@@ -21,8 +22,14 @@ export class Mutex {
         await user;
     }
 
+    /**
+     * @throws {@link TryLockError}
+     */
     public trylock(): void {
-        assert(!this.lock, 'Already locked.');
+        assert(
+            !this.lock,
+            new Error(),
+        );
         this.locked = true;
     }
 

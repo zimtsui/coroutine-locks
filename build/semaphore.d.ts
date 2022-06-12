@@ -4,6 +4,9 @@ export declare class Semaphore {
     constructor(resourceCount?: number);
     private refresh;
     p(): Promise<void>;
+    /**
+     * @throws {@link TryLockError}
+     */
     tryp(): void;
     v(): void;
     throw(err: Error): void;

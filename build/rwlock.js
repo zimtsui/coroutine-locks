@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rwlock = void 0;
 const assert = require("assert");
 const public_manual_promise_1 = require("./public-manual-promise");
+const errors_1 = require("./errors");
 /**
  * Read write lock - Write starvation
  */
@@ -31,8 +32,11 @@ class Rwlock {
         this.refresh();
         await reader;
     }
+    /**
+     * @throws {@link TryLockError}
+     */
     tryrdlock() {
-        assert(!this.writing, 'Already write locked.');
+        assert(!this.writing, new errors_1.TryLockError());
         this.reading++;
     }
     async wrlock() {
@@ -41,9 +45,12 @@ class Rwlock {
         this.refresh();
         await writer;
     }
+    /**
+     * @throws {@link TryLockError}
+     */
     trywrlock() {
-        assert(!this.reading, 'Already read locked');
-        assert(!this.writing, 'Already write locked');
+        assert(!this.reading, new errors_1.TryLockError());
+        assert(!this.writing, new errors_1.TryLockError());
         this.writing = true;
     }
     unlock() {
