@@ -28,7 +28,7 @@ export class Mutex {
     public trylock(): void {
         assert(
             !this.lock,
-            new Error(),
+            new TryLockError(),
         );
         this.locked = true;
     }
