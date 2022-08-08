@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rwlock = void 0;
 const assert = require("assert");
-const public_manual_promise_1 = require("./public-manual-promise");
+const manual_promise_1 = require("@zimtsui/manual-promise");
 const errors_1 = require("./errors");
 /**
  * Read write lock - Write starvation
@@ -27,7 +27,7 @@ class Rwlock {
         }
     }
     async rdlock() {
-        const reader = new public_manual_promise_1.PublicManualPromise();
+        const reader = new manual_promise_1.PublicManualPromise();
         this.readers.push(reader);
         this.refresh();
         await reader;
@@ -40,7 +40,7 @@ class Rwlock {
         this.reading++;
     }
     async wrlock() {
-        const writer = new public_manual_promise_1.PublicManualPromise();
+        const writer = new manual_promise_1.PublicManualPromise();
         this.writers.push(writer);
         this.refresh();
         await writer;

@@ -1,10 +1,10 @@
 import assert = require('assert');
-import { PublicManualPromise } from './public-manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 import { TryLockError } from './errors';
 
 
 export class Mutex {
-    private users: PublicManualPromise[] = [];
+    private users: PublicManualPromise<void>[] = [];
 
     constructor(private locked = false) { }
 
@@ -16,7 +16,7 @@ export class Mutex {
     }
 
     public async lock(): Promise<void> {
-        const user = new PublicManualPromise();
+        const user = new PublicManualPromise<void>();
         this.users.push(user);
         this.refresh();
         await user;

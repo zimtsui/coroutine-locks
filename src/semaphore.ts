@@ -1,10 +1,10 @@
 import assert = require('assert');
-import { PublicManualPromise } from './public-manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 import { TryLockError } from './errors';
 
 
 export class Semaphore {
-    private consumers: PublicManualPromise[] = [];
+    private consumers: PublicManualPromise<void>[] = [];
 
     constructor(private resourceCount = 0) { }
 
@@ -16,7 +16,7 @@ export class Semaphore {
     }
 
     public async p(): Promise<void> {
-        const consumer = new PublicManualPromise();
+        const consumer = new PublicManualPromise<void>();
         this.consumers.push(consumer);
         this.refresh();
         await consumer;

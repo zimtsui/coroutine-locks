@@ -1,10 +1,10 @@
-import { PublicManualPromise } from './public-manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 /**
  * Read write lock - Write starvation
  */
 export declare class Rwlock {
-    protected readers: PublicManualPromise[];
-    protected writers: PublicManualPromise[];
+    protected readers: PublicManualPromise<void>[];
+    protected writers: PublicManualPromise<void>[];
     protected reading: number;
     protected writing: boolean;
     protected refresh(): void;

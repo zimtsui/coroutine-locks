@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConditionVariable = void 0;
-const public_manual_promise_1 = require("./public-manual-promise");
+const manual_promise_1 = require("@zimtsui/manual-promise");
 class ConditionVariable {
     constructor() {
         this.listeners = [];
@@ -12,7 +12,7 @@ class ConditionVariable {
     async wait(mutex) {
         if (mutex)
             mutex.unlock();
-        const listener = new public_manual_promise_1.PublicManualPromise();
+        const listener = new manual_promise_1.PublicManualPromise();
         this.listeners.push(listener);
         await listener;
         if (mutex)

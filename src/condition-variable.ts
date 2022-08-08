@@ -1,17 +1,17 @@
 import { Mutex } from './mutex';
-import { PublicManualPromise } from './public-manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 
 
 
 export class ConditionVariable {
-    private listeners: PublicManualPromise[] = [];
+    private listeners: PublicManualPromise<void>[] = [];
 
     /**
      * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
      */
     public async wait(mutex?: Mutex): Promise<void> {
         if (mutex) mutex.unlock();
-        const listener = new PublicManualPromise();
+        const listener = new PublicManualPromise<void>();
         this.listeners.push(listener);
         await listener;
         if (mutex) await mutex.lock();
