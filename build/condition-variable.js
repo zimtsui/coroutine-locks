@@ -12,7 +12,7 @@ class ConditionVariable {
     async wait(mutex) {
         if (mutex)
             mutex.unlock();
-        const listener = new manual_promise_1.PublicManualPromise();
+        const listener = new manual_promise_1.ManualPromise();
         this.listeners.push(listener);
         await listener;
         if (mutex)

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mutex = void 0;
 const assert = require("assert");
 const manual_promise_1 = require("@zimtsui/manual-promise");
-const errors_1 = require("./errors");
+const exceptions_1 = require("./exceptions");
 class Mutex {
     constructor(locked = false) {
         this.locked = locked;
@@ -16,7 +16,7 @@ class Mutex {
         }
     }
     async lock() {
-        const user = new manual_promise_1.PublicManualPromise();
+        const user = new manual_promise_1.ManualPromise();
         this.users.push(user);
         this.refresh();
         await user;
@@ -25,7 +25,7 @@ class Mutex {
      * @throws {@link TryLockError}
      */
     trylock() {
-        assert(!this.lock, new errors_1.TryLockError());
+        assert(!this.lock, new exceptions_1.TryLockError());
         this.locked = true;
     }
     unlock() {

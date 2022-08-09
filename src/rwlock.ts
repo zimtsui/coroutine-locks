@@ -1,14 +1,14 @@
 import assert = require('assert');
-import { PublicManualPromise } from '@zimtsui/manual-promise';
-import { TryLockError } from './errors';
+import { ManualPromise } from '@zimtsui/manual-promise';
+import { TryLockError } from './exceptions';
 
 
 /**
  * Read write lock - Write starvation
  */
 export class Rwlock {
-    protected readers: PublicManualPromise<void>[] = [];
-    protected writers: PublicManualPromise<void>[] = [];
+    protected readers: ManualPromise<void>[] = [];
+    protected writers: ManualPromise<void>[] = [];
     protected reading = 0;
     protected writing = false;
 
@@ -26,7 +26,7 @@ export class Rwlock {
     }
 
     public async rdlock(): Promise<void> {
-        const reader = new PublicManualPromise<void>();
+        const reader = new ManualPromise<void>();
         this.readers.push(reader);
         this.refresh();
         await reader;
@@ -44,7 +44,7 @@ export class Rwlock {
     }
 
     public async wrlock(): Promise<void> {
-        const writer = new PublicManualPromise<void>();
+        const writer = new ManualPromise<void>();
         this.writers.push(writer);
         this.refresh();
         await writer;

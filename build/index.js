@@ -15,5 +15,5 @@ __exportStar(require("./rwlock"), exports);
 __exportStar(require("./wrlock"), exports);
 __exportStar(require("./semaphore"), exports);
 __exportStar(require("./condition-variable"), exports);
-__exportStar(require("./errors"), exports);
+__exportStar(require("./exceptions"), exports);
 //# sourceMappingURL=index.js.map
