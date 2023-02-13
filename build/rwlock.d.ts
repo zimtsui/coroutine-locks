@@ -7,6 +7,7 @@ export declare class Rwlock {
     protected writers: ManualPromise<void>[];
     protected reading: number;
     protected writing: boolean;
+    private err;
     protected refresh(): void;
     rdlock(): Promise<void>;
     /**

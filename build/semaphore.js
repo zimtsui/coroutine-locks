@@ -8,6 +8,7 @@ class Semaphore {
     constructor(resourceCount = 0) {
         this.resourceCount = resourceCount;
         this.consumers = [];
+        this.err = null;
     }
     refresh() {
         if (this.resourceCount && this.consumers.length) {
@@ -16,6 +17,7 @@ class Semaphore {
         }
     }
     async p() {
+        assert(this.err === null, this.err);
         const consumer = new manual_promise_1.ManualPromise();
         this.consumers.push(consumer);
         this.refresh();
@@ -25,10 +27,12 @@ class Semaphore {
      * @throws {@link TryLockError}
      */
     tryp() {
+        assert(this.err === null, this.err);
         assert(this.resourceCount, new exceptions_1.TryLockError());
         this.resourceCount--;
     }
     v() {
+        assert(this.err === null, this.err);
         this.resourceCount++;
         this.refresh();
     }
@@ -36,6 +40,7 @@ class Semaphore {
         for (const consumer of this.consumers)
             consumer.reject(err);
         this.consumers = [];
+        this.err = err;
     }
 }
 exports.Semaphore = Semaphore;

@@ -11,6 +11,7 @@ export class Rwlock {
     protected writers: ManualPromise<void>[] = [];
     protected reading = 0;
     protected writing = false;
+    private err: Error | null = null;
 
     protected refresh(): void {
         if (this.writing) return;
@@ -26,6 +27,7 @@ export class Rwlock {
     }
 
     public async rdlock(): Promise<void> {
+        assert(this.err === null, <Error>this.err);
         const reader = new ManualPromise<void>();
         this.readers.push(reader);
         this.refresh();
@@ -36,6 +38,7 @@ export class Rwlock {
      * @throws {@link TryLockError}
      */
     public tryrdlock(): void {
+        assert(this.err === null, <Error>this.err);
         assert(
             !this.writing,
             new TryLockError(),
@@ -44,6 +47,7 @@ export class Rwlock {
     }
 
     public async wrlock(): Promise<void> {
+        assert(this.err === null, <Error>this.err);
         const writer = new ManualPromise<void>();
         this.writers.push(writer);
         this.refresh();
@@ -54,6 +58,7 @@ export class Rwlock {
      * @throws {@link TryLockError}
      */
     public trywrlock(): void {
+        assert(this.err === null, <Error>this.err);
         assert(
             !this.reading,
             new TryLockError(),
@@ -66,6 +71,7 @@ export class Rwlock {
     }
 
     public unlock(): void {
+        assert(this.err === null, <Error>this.err);
         if (this.reading) this.reading--;
         if (this.writing) this.writing = false;
         this.refresh();
@@ -76,5 +82,6 @@ export class Rwlock {
         this.readers = [];
         for (const writer of this.writers) writer.reject(err);
         this.writers = [];
+        this.err = err;
     }
 }

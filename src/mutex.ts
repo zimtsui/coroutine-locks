@@ -5,6 +5,7 @@ import { TryLockError } from './exceptions';
 
 export class Mutex {
     private users: ManualPromise<void>[] = [];
+    private err: Error | null = null;
 
     constructor(private locked = false) { }
 
@@ -16,6 +17,7 @@ export class Mutex {
     }
 
     public async lock(): Promise<void> {
+        assert(this.err === null, <Error>this.err);
         const user = new ManualPromise<void>();
         this.users.push(user);
         this.refresh();
@@ -26,6 +28,7 @@ export class Mutex {
      * @throws {@link TryLockError}
      */
     public trylock(): void {
+        assert(this.err === null, <Error>this.err);
         assert(
             !this.lock,
             new TryLockError(),
@@ -34,6 +37,7 @@ export class Mutex {
     }
 
     public unlock(): void {
+        assert(this.err === null, <Error>this.err);
         assert(this.lock);
         this.locked = false;
         this.refresh();
@@ -42,5 +46,6 @@ export class Mutex {
     public throw(err: Error): void {
         for (const user of this.users) user.reject(err);
         this.users = [];
+        this.err = err;
     }
 }

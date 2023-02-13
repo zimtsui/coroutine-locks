@@ -13,6 +13,7 @@ class Rwlock {
         this.writers = [];
         this.reading = 0;
         this.writing = false;
+        this.err = null;
     }
     refresh() {
         if (this.writing)
@@ -27,6 +28,7 @@ class Rwlock {
         }
     }
     async rdlock() {
+        assert(this.err === null, this.err);
         const reader = new manual_promise_1.ManualPromise();
         this.readers.push(reader);
         this.refresh();
@@ -36,10 +38,12 @@ class Rwlock {
      * @throws {@link TryLockError}
      */
     tryrdlock() {
+        assert(this.err === null, this.err);
         assert(!this.writing, new exceptions_1.TryLockError());
         this.reading++;
     }
     async wrlock() {
+        assert(this.err === null, this.err);
         const writer = new manual_promise_1.ManualPromise();
         this.writers.push(writer);
         this.refresh();
@@ -49,11 +53,13 @@ class Rwlock {
      * @throws {@link TryLockError}
      */
     trywrlock() {
+        assert(this.err === null, this.err);
         assert(!this.reading, new exceptions_1.TryLockError());
         assert(!this.writing, new exceptions_1.TryLockError());
         this.writing = true;
     }
     unlock() {
+        assert(this.err === null, this.err);
         if (this.reading)
             this.reading--;
         if (this.writing)
@@ -67,6 +73,7 @@ class Rwlock {
         for (const writer of this.writers)
             writer.reject(err);
         this.writers = [];
+        this.err = err;
     }
 }
 exports.Rwlock = Rwlock;

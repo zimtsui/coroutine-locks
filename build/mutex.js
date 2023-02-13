@@ -8,6 +8,7 @@ class Mutex {
     constructor(locked = false) {
         this.locked = locked;
         this.users = [];
+        this.err = null;
     }
     refresh() {
         if (!this.locked && this.users.length) {
@@ -16,6 +17,7 @@ class Mutex {
         }
     }
     async lock() {
+        assert(this.err === null, this.err);
         const user = new manual_promise_1.ManualPromise();
         this.users.push(user);
         this.refresh();
@@ -25,10 +27,12 @@ class Mutex {
      * @throws {@link TryLockError}
      */
     trylock() {
+        assert(this.err === null, this.err);
         assert(!this.lock, new exceptions_1.TryLockError());
         this.locked = true;
     }
     unlock() {
+        assert(this.err === null, this.err);
         assert(this.lock);
         this.locked = false;
         this.refresh();
@@ -37,6 +41,7 @@ class Mutex {
         for (const user of this.users)
             user.reject(err);
         this.users = [];
+        this.err = err;
     }
 }
 exports.Mutex = Mutex;

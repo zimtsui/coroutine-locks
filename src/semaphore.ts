@@ -5,6 +5,7 @@ import { TryLockError } from './exceptions';
 
 export class Semaphore {
     private consumers: ManualPromise<void>[] = [];
+    private err: Error | null = null;
 
     constructor(private resourceCount = 0) { }
 
@@ -16,6 +17,7 @@ export class Semaphore {
     }
 
     public async p(): Promise<void> {
+        assert(this.err === null, <Error>this.err);
         const consumer = new ManualPromise<void>();
         this.consumers.push(consumer);
         this.refresh();
@@ -26,6 +28,7 @@ export class Semaphore {
      * @throws {@link TryLockError}
      */
     public tryp(): void {
+        assert(this.err === null, <Error>this.err);
         assert(
             this.resourceCount,
             new TryLockError(),
@@ -34,6 +37,7 @@ export class Semaphore {
     }
 
     public v(): void {
+        assert(this.err === null, <Error>this.err);
         this.resourceCount++;
         this.refresh();
     }
@@ -41,5 +45,6 @@ export class Semaphore {
     public throw(err: Error): void {
         for (const consumer of this.consumers) consumer.reject(err);
         this.consumers = [];
+        this.err = err;
     }
 }
