@@ -10,7 +10,7 @@
 
 Additional utilities:
 
-- Double ended semaphore
-- Double ended semaphore queue
+- Finite semaphore
+- Finite semaphore queue
 - Read write box
 - Write read box

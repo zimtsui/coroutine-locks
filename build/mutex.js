@@ -4,22 +4,22 @@ exports.Mutex = void 0;
 const bisemaphore_1 = require("./bisemaphore");
 class Mutex {
     constructor(locked = false) {
-        this.bisem = new bisemaphore_1.Bisemaphore(locked ? 0 : 1, 1);
+        this.finsem = new bisemaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
     }
     async lock() {
-        await this.bisem.p();
+        await this.finsem.p();
     }
     /**
      * @throws {@link TryError}
      */
     trylock() {
-        this.bisem.tryP();
+        this.finsem.tryP();
     }
     unlock() {
-        this.bisem.tryV();
+        this.finsem.tryV();
     }
     throw(err) {
-        this.bisem.throw(err);
+        this.finsem.throw(err);
     }
 }
 exports.Mutex = Mutex;

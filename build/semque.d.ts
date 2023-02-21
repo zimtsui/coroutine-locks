@@ -1,6 +1,6 @@
 export declare class Semque<T> {
     private deque;
-    private bisem;
+    private finsem;
     constructor(resources?: T[], capacity?: number);
     /**
      * @async

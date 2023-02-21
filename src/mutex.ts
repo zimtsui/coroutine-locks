@@ -1,30 +1,30 @@
 import { TryError } from './exceptions';
-import { Bisemaphore } from './bisemaphore';
+import { FiniteSemaphore } from './bisemaphore';
 
 
 export class Mutex {
-    private bisem: Bisemaphore;
+    private finsem: FiniteSemaphore;
 
     constructor(locked = false) {
-        this.bisem = new Bisemaphore(locked ? 0 : 1, 1);
+        this.finsem = new FiniteSemaphore(locked ? 0 : 1, 1);
     }
 
     public async lock(): Promise<void> {
-        await this.bisem.p();
+        await this.finsem.p();
     }
 
     /**
      * @throws {@link TryError}
      */
     public trylock(): void {
-        this.bisem.tryP();
+        this.finsem.tryP();
     }
 
     public unlock(): void {
-        this.bisem.tryV();
+        this.finsem.tryV();
     }
 
     public throw(err: Error): void {
-        this.bisem.throw(err);
+        this.finsem.throw(err);
     }
 }

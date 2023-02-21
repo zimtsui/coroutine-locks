@@ -1,4 +1,4 @@
-export declare class Bisemaphore {
+export declare class FiniteSemaphore {
     private used;
     private unused;
     constructor(resourceCount?: number, capacity?: number);

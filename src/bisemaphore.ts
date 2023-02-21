@@ -2,7 +2,7 @@ import assert = require("assert");
 import { Semaphore } from "./semaphore";
 
 
-export class Bisemaphore {
+export class FiniteSemaphore {
 	private used: Semaphore;
 	private unused: Semaphore;
 

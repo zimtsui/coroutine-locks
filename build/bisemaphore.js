@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Bisemaphore = void 0;
+exports.FiniteSemaphore = void 0;
 const assert = require("assert");
 const semaphore_1 = require("./semaphore");
-class Bisemaphore {
+class FiniteSemaphore {
     constructor(resourceCount = 0, capacity = Number.POSITIVE_INFINITY) {
         assert(capacity >= resourceCount);
         this.used = new semaphore_1.Semaphore(resourceCount);
@@ -44,5 +44,5 @@ class Bisemaphore {
         this.unused.throw(err);
     }
 }
-exports.Bisemaphore = Bisemaphore;
+exports.FiniteSemaphore = FiniteSemaphore;
 //# sourceMappingURL=bisemaphore.js.map

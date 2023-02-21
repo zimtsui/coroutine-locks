@@ -1,5 +1,5 @@
 export declare class Mutex {
-    private bisem;
+    private finsem;
     constructor(locked?: boolean);
     lock(): Promise<void>;
     /**

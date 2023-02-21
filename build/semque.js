@@ -5,7 +5,7 @@ const deque_1 = require("@zimtsui/deque");
 const bisemaphore_1 = require("./bisemaphore");
 class Semque {
     constructor(resources = [], capacity = Number.POSITIVE_INFINITY) {
-        this.bisem = new bisemaphore_1.Bisemaphore(resources.length, capacity);
+        this.finsem = new bisemaphore_1.FiniteSemaphore(resources.length, capacity);
         this.deque = new deque_1.Deque(resources);
     }
     /**
@@ -13,11 +13,11 @@ class Semque {
      * @throws {@link TryError}
      */
     async push(x) {
-        await this.bisem.v();
+        await this.finsem.v();
         this.deque.push(x);
     }
     tryPush(x) {
-        this.bisem.tryV();
+        this.finsem.tryV();
         this.deque.push(x);
     }
     /**
@@ -25,15 +25,15 @@ class Semque {
      * @throws {@link TryError}
      */
     async pop() {
-        await this.bisem.p();
+        await this.finsem.p();
         return this.deque.pop();
     }
     tryPop() {
-        this.bisem.tryP();
+        this.finsem.tryP();
         return this.deque.pop();
     }
     throw(err) {
-        this.bisem.throw(err);
+        this.finsem.throw(err);
     }
 }
 exports.Semque = Semque;

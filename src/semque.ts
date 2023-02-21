@@ -1,15 +1,15 @@
 import { Deque } from '@zimtsui/deque';
-import { Bisemaphore } from "./bisemaphore";
+import { FiniteSemaphore } from "./bisemaphore";
 
 export class Semque<T> {
 	private deque: Deque<T>;
-	private bisem: Bisemaphore;
+	private finsem: FiniteSemaphore;
 
 	public constructor(
 		resources: T[] = [],
 		capacity = Number.POSITIVE_INFINITY,
 	) {
-		this.bisem = new Bisemaphore(resources.length, capacity);
+		this.finsem = new FiniteSemaphore(resources.length, capacity);
 		this.deque = new Deque(resources);
 	}
 
@@ -18,12 +18,12 @@ export class Semque<T> {
 	 * @throws {@link TryError}
 	 */
 	public async push(x: T): Promise<void> {
-		await this.bisem.v();
+		await this.finsem.v();
 		this.deque.push(x);
 	}
 
 	public tryPush(x: T): void {
-		this.bisem.tryV();
+		this.finsem.tryV();
 		this.deque.push(x);
 	}
 
@@ -32,16 +32,16 @@ export class Semque<T> {
 	 * @throws {@link TryError}
 	 */
 	public async pop(): Promise<T> {
-		await this.bisem.p();
+		await this.finsem.p();
 		return this.deque.pop();
 	}
 
 	public tryPop(): T {
-		this.bisem.tryP();
+		this.finsem.tryP();
 		return this.deque.pop();
 	}
 
 	public throw(err: Error): void {
-		this.bisem.throw(err);
+		this.finsem.throw(err);
 	}
 }
