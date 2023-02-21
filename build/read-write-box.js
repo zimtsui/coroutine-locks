@@ -7,32 +7,18 @@ class ReadWriteBox {
         this.x = x;
         this.lock = new read_write_lock_1.ReadWriteLock();
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async readLock() {
         await this.lock.readLock();
         return this.x;
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryReadLock() {
         this.lock.tryReadLock();
         return this.x;
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async writeLock() {
         await this.lock.writeLock();
         return this.x;
     }
-    /**
-     * @throws {@link TryError}
-     */
     async tryWriteLock() {
         this.lock.tryWriteLock();
         return this.x;

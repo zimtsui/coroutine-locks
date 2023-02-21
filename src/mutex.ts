@@ -9,18 +9,11 @@ export class Mutex {
         this.finsem = new FiniteSemaphore(locked ? 0 : 1, 1);
     }
 
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     public async lock(): Promise<void> {
         await this.finsem.p();
     }
 
-    /**
-     * @throws {@link TryError}
-     */
-    public trylock(): void {
+    public tryLock(): void {
         this.finsem.tryP();
     }
 

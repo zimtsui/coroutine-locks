@@ -16,35 +16,21 @@ export class FiniteSemaphore {
 		this.unused = new Semaphore(capacity - resourceCount);
 	}
 
-	/**
-	 * @async
-	 * @throws {@link TryError}
-	 */
 	public async v(): Promise<void> {
 		await this.unused.p();
 		this.used.v();
 	}
 
-	/**
-	 * @throws {@link TryError}
-	 */
 	public tryV(): void {
 		this.unused.tryp();
 		this.used.v();
 	}
 
-	/**
-	 * @async
-	 * @throws {@link TryError}
-	 */
 	public async p(): Promise<void> {
 		await this.used.p();
 		this.unused.v();
 	}
 
-	/**
-	 * @throws {@link TryError}
-	 */
 	public tryP(): void {
 		this.used.tryp();
 		this.unused.v();

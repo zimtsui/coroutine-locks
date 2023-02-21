@@ -4,14 +4,7 @@ export declare class Semaphore {
     private err;
     constructor(resourceCount?: number);
     private refresh;
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     p(): Promise<void>;
-    /**
-     * @throws {@link TryError}
-     */
     tryp(): void;
     v(): void;
     throw(err: Error): void;

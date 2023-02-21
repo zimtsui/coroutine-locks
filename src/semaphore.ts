@@ -16,10 +16,6 @@ export class Semaphore {
         }
     }
 
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     public async p(): Promise<void> {
         assert(this.err === null, <Error>this.err);
         const consumer = new ManualPromise<void>();
@@ -28,9 +24,6 @@ export class Semaphore {
         await consumer;
     }
 
-    /**
-     * @throws {@link TryError}
-     */
     public tryp(): void {
         assert(this.err === null, <Error>this.err);
         assert(

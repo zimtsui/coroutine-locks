@@ -13,35 +13,21 @@ export class Semque<T> {
 		this.deque = new Deque(resources);
 	}
 
-	/**
-	 * @async
-	 * @throws {@link TryError}
-	 */
 	public async push(x: T): Promise<void> {
 		await this.finsem.v();
 		this.deque.push(x);
 	}
 
-	/**
-	 * @throws {@link TryError}
-	 */
 	public tryPush(x: T): void {
 		this.finsem.tryV();
 		this.deque.push(x);
 	}
 
-	/**
-	 * @async
-	 * @throws {@link TryError}
-	 */
 	public async pop(): Promise<T> {
 		await this.finsem.p();
 		return this.deque.pop();
 	}
 
-	/**
-	 * @throws {@link TryError}
-	 */
 	public tryPop(): T {
 		this.finsem.tryP();
 		return this.deque.pop();

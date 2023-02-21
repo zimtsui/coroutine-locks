@@ -8,32 +8,18 @@ class Semque {
         this.finsem = new finite_semaphore_1.FiniteSemaphore(resources.length, capacity);
         this.deque = new deque_1.Deque(resources);
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async push(x) {
         await this.finsem.v();
         this.deque.push(x);
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryPush(x) {
         this.finsem.tryV();
         this.deque.push(x);
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async pop() {
         await this.finsem.p();
         return this.deque.pop();
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryPop() {
         this.finsem.tryP();
         return this.deque.pop();

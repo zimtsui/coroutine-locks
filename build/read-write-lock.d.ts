@@ -9,23 +9,9 @@ export declare class ReadWriteLock {
     protected writing: boolean;
     private err;
     protected refresh(): void;
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     readLock(): Promise<void>;
-    /**
-     * @throws {@link TryError}
-     */
     tryReadLock(): void;
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     writeLock(): Promise<void>;
-    /**
-     * @throws {@link TryError}
-     */
     tryWriteLock(): void;
     /**
      * @throws {@link TryError} Not read locked yet.

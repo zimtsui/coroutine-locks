@@ -27,10 +27,6 @@ class ReadWriteLock {
             this.writing = true;
         }
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async readLock() {
         assert(this.err === null, this.err);
         const reader = new manual_promise_1.ManualPromise();
@@ -38,18 +34,11 @@ class ReadWriteLock {
         this.refresh();
         await reader;
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryReadLock() {
         assert(this.err === null, this.err);
         assert(!this.writing, new exceptions_1.TryError());
         this.reading++;
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async writeLock() {
         assert(this.err === null, this.err);
         const writer = new manual_promise_1.ManualPromise();
@@ -57,9 +46,6 @@ class ReadWriteLock {
         this.refresh();
         await writer;
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryWriteLock() {
         assert(this.err === null, this.err);
         assert(!this.reading, new exceptions_1.TryError());

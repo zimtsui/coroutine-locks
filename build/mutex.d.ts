@@ -1,15 +1,8 @@
 export declare class Mutex {
     private finsem;
     constructor(locked?: boolean);
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     lock(): Promise<void>;
-    /**
-     * @throws {@link TryError}
-     */
-    trylock(): void;
+    tryLock(): void;
     /**
      * @throws {@link TryError}
      */

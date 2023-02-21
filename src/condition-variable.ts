@@ -10,13 +10,15 @@ export class ConditionVariable {
     /**
      * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
      */
-    public async wait(mutex?: Mutex): Promise<void> {
+    public async wait(
+        // mutex?: Mutex,
+    ): Promise<void> {
         assert(this.err === null, <Error>this.err);
-        if (mutex) mutex.unlock();
+        // if (mutex) mutex.unlock();
         const listener = new ManualPromise<void>();
         this.listeners.push(listener);
         await listener;
-        if (mutex) await mutex.lock();
+        // if (mutex) await mutex.lock();
     }
 
     public signal(): void {

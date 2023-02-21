@@ -6,17 +6,10 @@ class Mutex {
     constructor(locked = false) {
         this.finsem = new finite_semaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async lock() {
         await this.finsem.p();
     }
-    /**
-     * @throws {@link TryError}
-     */
-    trylock() {
+    tryLock() {
         this.finsem.tryP();
     }
     /**

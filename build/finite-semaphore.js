@@ -9,32 +9,18 @@ class FiniteSemaphore {
         this.used = new semaphore_1.Semaphore(resourceCount);
         this.unused = new semaphore_1.Semaphore(capacity - resourceCount);
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async v() {
         await this.unused.p();
         this.used.v();
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryV() {
         this.unused.tryp();
         this.used.v();
     }
-    /**
-     * @async
-     * @throws {@link TryError}
-     */
     async p() {
         await this.used.p();
         this.unused.v();
     }
-    /**
-     * @throws {@link TryError}
-     */
     tryP() {
         this.used.tryp();
         this.unused.v();
