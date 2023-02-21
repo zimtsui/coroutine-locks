@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Wrlock = void 0;
-const rwlock_1 = require("./rwlock");
+exports.WriteReadLock = void 0;
+const read_write_lock_1 = require("./read-write-lock");
 /**
  * Write read lock - Write priority
  */
-class Wrlock extends rwlock_1.Rwlock {
+class WriteReadLock extends read_write_lock_1.ReadWriteLock {
     refresh() {
         if (this.writing)
             return;
@@ -21,5 +21,5 @@ class Wrlock extends rwlock_1.Rwlock {
         }
     }
 }
-exports.Wrlock = Wrlock;
-//# sourceMappingURL=wrlock.js.map
+exports.WriteReadLock = WriteReadLock;
+//# sourceMappingURL=write-read-lock.js.map

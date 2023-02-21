@@ -16,6 +16,10 @@ class Semaphore {
             this.resourceCount--;
         }
     }
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
     async p() {
         assert(this.err === null, this.err);
         const consumer = new manual_promise_1.ManualPromise();
@@ -24,13 +28,16 @@ class Semaphore {
         await consumer;
     }
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
     tryp() {
         assert(this.err === null, this.err);
-        assert(this.resourceCount, new exceptions_1.TryLockError());
+        assert(this.resourceCount, new exceptions_1.TryError());
         this.resourceCount--;
     }
+    /**
+     * @throws {@link TryError}
+     */
     v() {
         assert(this.err === null, this.err);
         this.resourceCount++;

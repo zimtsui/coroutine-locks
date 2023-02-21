@@ -1,1 +1,1 @@
-export class TryLockError extends Error { }
+export class TryError extends Error { }

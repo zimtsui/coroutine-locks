@@ -1,6 +1,6 @@
 import assert = require('assert');
 import { ManualPromise } from '@zimtsui/manual-promise';
-import { TryLockError } from './exceptions';
+import { TryError } from './exceptions';
 
 
 export class Semaphore {
@@ -16,6 +16,10 @@ export class Semaphore {
         }
     }
 
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
     public async p(): Promise<void> {
         assert(this.err === null, <Error>this.err);
         const consumer = new ManualPromise<void>();
@@ -25,17 +29,20 @@ export class Semaphore {
     }
 
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
     public tryp(): void {
         assert(this.err === null, <Error>this.err);
         assert(
             this.resourceCount,
-            new TryLockError(),
+            new TryError(),
         );
         this.resourceCount--;
     }
 
+    /**
+     * @throws {@link TryError}
+     */
     public v(): void {
         assert(this.err === null, <Error>this.err);
         this.resourceCount++;

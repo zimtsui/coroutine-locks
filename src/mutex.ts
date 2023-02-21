@@ -1,51 +1,30 @@
-import assert = require('assert');
-import { ManualPromise } from '@zimtsui/manual-promise';
-import { TryLockError } from './exceptions';
+import { TryError } from './exceptions';
+import { Bisemaphore } from './bisemaphore';
 
 
 export class Mutex {
-    private users: ManualPromise<void>[] = [];
-    private err: Error | null = null;
+    private bisem: Bisemaphore;
 
-    constructor(private locked = false) { }
-
-    private refresh(): void {
-        if (!this.locked && this.users.length) {
-            this.users.pop()!.resolve();
-            this.locked = true;
-        }
+    constructor(locked = false) {
+        this.bisem = new Bisemaphore(locked ? 0 : 1, 1);
     }
 
     public async lock(): Promise<void> {
-        assert(this.err === null, <Error>this.err);
-        const user = new ManualPromise<void>();
-        this.users.push(user);
-        this.refresh();
-        await user;
+        await this.bisem.p();
     }
 
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
     public trylock(): void {
-        assert(this.err === null, <Error>this.err);
-        assert(
-            !this.lock,
-            new TryLockError(),
-        );
-        this.locked = true;
+        this.bisem.tryP();
     }
 
     public unlock(): void {
-        assert(this.err === null, <Error>this.err);
-        assert(this.lock);
-        this.locked = false;
-        this.refresh();
+        this.bisem.tryV();
     }
 
     public throw(err: Error): void {
-        for (const user of this.users) user.reject(err);
-        this.users = [];
-        this.err = err;
+        this.bisem.throw(err);
     }
 }

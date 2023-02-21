@@ -15,9 +15,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./mutex"), exports);
-__exportStar(require("./rwlock"), exports);
-__exportStar(require("./wrlock"), exports);
+__exportStar(require("./read-write-lock"), exports);
+__exportStar(require("./read-write-box"), exports);
+__exportStar(require("./write-read-lock"), exports);
+__exportStar(require("./write-read-box"), exports);
 __exportStar(require("./semaphore"), exports);
 __exportStar(require("./condition-variable"), exports);
+__exportStar(require("./semque"), exports);
+__exportStar(require("./bisemaphore"), exports);
 __exportStar(require("./exceptions"), exports);
 //# sourceMappingURL=index.js.map

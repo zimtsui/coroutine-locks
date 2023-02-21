@@ -1,2 +1,2 @@
-export declare class TryLockError extends Error {
+export declare class TryError extends Error {
 }

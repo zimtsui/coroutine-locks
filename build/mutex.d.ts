@@ -1,12 +1,9 @@
 export declare class Mutex {
-    private locked;
-    private users;
-    private err;
+    private bisem;
     constructor(locked?: boolean);
-    private refresh;
     lock(): Promise<void>;
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
     trylock(): void;
     unlock(): void;

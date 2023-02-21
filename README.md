@@ -1,6 +1,6 @@
 # Coroutine locks
 
-[![Npm package version](https://badgen.net/npm/v/@zimtsui/coroutine-locks)](https://www.npmjs.com/package/@zimtsui/coroutine-locks)
+[![Npm package version](https://img.shields.io/npm/v/@zimtsui/deque?style=flat-square)](https://www.npmjs.com/package/@zimtsui/coroutine-locks)
 
 - Mutex
 - Read write lock

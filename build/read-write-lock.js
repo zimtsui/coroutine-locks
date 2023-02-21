@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Rwlock = void 0;
+exports.ReadWriteLock = void 0;
 const assert = require("assert");
 const manual_promise_1 = require("@zimtsui/manual-promise");
 const exceptions_1 = require("./exceptions");
 /**
  * Read write lock - Write starvation
  */
-class Rwlock {
+class ReadWriteLock {
     constructor() {
         this.readers = [];
         this.writers = [];
@@ -27,7 +27,11 @@ class Rwlock {
             this.writing = true;
         }
     }
-    async rdlock() {
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
+    async readLock() {
         assert(this.err === null, this.err);
         const reader = new manual_promise_1.ManualPromise();
         this.readers.push(reader);
@@ -35,14 +39,18 @@ class Rwlock {
         await reader;
     }
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
-    tryrdlock() {
+    tryReadLock() {
         assert(this.err === null, this.err);
-        assert(!this.writing, new exceptions_1.TryLockError());
+        assert(!this.writing, new exceptions_1.TryError());
         this.reading++;
     }
-    async wrlock() {
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
+    async writeLock() {
         assert(this.err === null, this.err);
         const writer = new manual_promise_1.ManualPromise();
         this.writers.push(writer);
@@ -50,20 +58,30 @@ class Rwlock {
         await writer;
     }
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
-    trywrlock() {
+    tryWriteLock() {
         assert(this.err === null, this.err);
-        assert(!this.reading, new exceptions_1.TryLockError());
-        assert(!this.writing, new exceptions_1.TryLockError());
+        assert(!this.reading, new exceptions_1.TryError());
+        assert(!this.writing, new exceptions_1.TryError());
         this.writing = true;
     }
-    unlock() {
+    /**
+     * @throws {@link TryError} Not read locked yet.
+     */
+    readUnlock() {
         assert(this.err === null, this.err);
-        if (this.reading)
-            this.reading--;
-        if (this.writing)
-            this.writing = false;
+        assert(this.reading, new exceptions_1.TryError());
+        this.reading--;
+        this.refresh();
+    }
+    /**
+     * @throws {@link TryError} Not write locked yet.
+     */
+    writeUnlock() {
+        assert(this.err === null, this.err);
+        assert(this.writing, new exceptions_1.TryError());
+        this.writing = false;
         this.refresh();
     }
     throw(err) {
@@ -76,5 +94,5 @@ class Rwlock {
         this.err = err;
     }
 }
-exports.Rwlock = Rwlock;
-//# sourceMappingURL=rwlock.js.map
+exports.ReadWriteLock = ReadWriteLock;
+//# sourceMappingURL=read-write-lock.js.map

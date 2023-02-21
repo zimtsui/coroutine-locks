@@ -1,47 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mutex = void 0;
-const assert = require("assert");
-const manual_promise_1 = require("@zimtsui/manual-promise");
-const exceptions_1 = require("./exceptions");
+const bisemaphore_1 = require("./bisemaphore");
 class Mutex {
     constructor(locked = false) {
-        this.locked = locked;
-        this.users = [];
-        this.err = null;
-    }
-    refresh() {
-        if (!this.locked && this.users.length) {
-            this.users.pop().resolve();
-            this.locked = true;
-        }
+        this.bisem = new bisemaphore_1.Bisemaphore(locked ? 0 : 1, 1);
     }
     async lock() {
-        assert(this.err === null, this.err);
-        const user = new manual_promise_1.ManualPromise();
-        this.users.push(user);
-        this.refresh();
-        await user;
+        await this.bisem.p();
     }
     /**
-     * @throws {@link TryLockError}
+     * @throws {@link TryError}
      */
     trylock() {
-        assert(this.err === null, this.err);
-        assert(!this.lock, new exceptions_1.TryLockError());
-        this.locked = true;
+        this.bisem.tryP();
     }
     unlock() {
-        assert(this.err === null, this.err);
-        assert(this.lock);
-        this.locked = false;
-        this.refresh();
+        this.bisem.tryV();
     }
     throw(err) {
-        for (const user of this.users)
-            user.reject(err);
-        this.users = [];
-        this.err = err;
+        this.bisem.throw(err);
     }
 }
 exports.Mutex = Mutex;
