@@ -7,3 +7,10 @@
 - Write read lock
 - Semaphore
 - Condition variable
+
+Additional utilities:
+
+- Double ended semaphore
+- Double ended semaphore queue
+- Read write box
+- Write read box
