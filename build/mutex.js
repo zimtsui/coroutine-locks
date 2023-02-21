@@ -1,11 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mutex = void 0;
-const bisemaphore_1 = require("./bisemaphore");
+const finite_semaphore_1 = require("./finite-semaphore");
 class Mutex {
     constructor(locked = false) {
-        this.finsem = new bisemaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
+        this.finsem = new finite_semaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
     }
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
     async lock() {
         await this.finsem.p();
     }
@@ -15,6 +19,9 @@ class Mutex {
     trylock() {
         this.finsem.tryP();
     }
+    /**
+     * @throws {@link TryError}
+     */
     unlock() {
         this.finsem.tryV();
     }

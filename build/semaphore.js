@@ -35,9 +35,6 @@ class Semaphore {
         assert(this.resourceCount, new exceptions_1.TryError());
         this.resourceCount--;
     }
-    /**
-     * @throws {@link TryError}
-     */
     v() {
         assert(this.err === null, this.err);
         this.resourceCount++;

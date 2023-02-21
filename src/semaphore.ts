@@ -40,9 +40,6 @@ export class Semaphore {
         this.resourceCount--;
     }
 
-    /**
-     * @throws {@link TryError}
-     */
     public v(): void {
         assert(this.err === null, <Error>this.err);
         this.resourceCount++;

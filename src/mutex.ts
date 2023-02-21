@@ -1,5 +1,5 @@
 import { TryError } from './exceptions';
-import { FiniteSemaphore } from './bisemaphore';
+import { FiniteSemaphore } from './finite-semaphore';
 
 
 export class Mutex {
@@ -9,6 +9,10 @@ export class Mutex {
         this.finsem = new FiniteSemaphore(locked ? 0 : 1, 1);
     }
 
+    /**
+     * @async
+     * @throws {@link TryError}
+     */
     public async lock(): Promise<void> {
         await this.finsem.p();
     }
@@ -20,6 +24,9 @@ export class Mutex {
         this.finsem.tryP();
     }
 
+    /**
+     * @throws {@link TryError}
+     */
     public unlock(): void {
         this.finsem.tryV();
     }

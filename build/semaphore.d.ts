@@ -13,9 +13,6 @@ export declare class Semaphore {
      * @throws {@link TryError}
      */
     tryp(): void;
-    /**
-     * @throws {@link TryError}
-     */
     v(): void;
     throw(err: Error): void;
 }

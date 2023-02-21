@@ -1,5 +1,5 @@
 import { Deque } from '@zimtsui/deque';
-import { FiniteSemaphore } from "./bisemaphore";
+import { FiniteSemaphore } from "./finite-semaphore";
 
 export class Semque<T> {
 	private deque: Deque<T>;
@@ -22,6 +22,9 @@ export class Semque<T> {
 		this.deque.push(x);
 	}
 
+	/**
+	 * @throws {@link TryError}
+	 */
 	public tryPush(x: T): void {
 		this.finsem.tryV();
 		this.deque.push(x);
@@ -36,6 +39,9 @@ export class Semque<T> {
 		return this.deque.pop();
 	}
 
+	/**
+	 * @throws {@link TryError}
+	 */
 	public tryPop(): T {
 		this.finsem.tryP();
 		return this.deque.pop();

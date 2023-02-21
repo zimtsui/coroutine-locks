@@ -45,4 +45,4 @@ class FiniteSemaphore {
     }
 }
 exports.FiniteSemaphore = FiniteSemaphore;
-//# sourceMappingURL=bisemaphore.js.map
+//# sourceMappingURL=finite-semaphore.js.map

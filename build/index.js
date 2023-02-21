@@ -22,6 +22,6 @@ __exportStar(require("./write-read-box"), exports);
 __exportStar(require("./semaphore"), exports);
 __exportStar(require("./condition-variable"), exports);
 __exportStar(require("./semque"), exports);
-__exportStar(require("./bisemaphore"), exports);
+__exportStar(require("./finite-semaphore"), exports);
 __exportStar(require("./exceptions"), exports);
 //# sourceMappingURL=index.js.map

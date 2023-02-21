@@ -6,5 +6,5 @@ export * from './write-read-box';
 export * from './semaphore';
 export * from './condition-variable';
 export * from './semque';
-export * from './bisemaphore';
+export * from './finite-semaphore';
 export * from './exceptions';

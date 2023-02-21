@@ -1,5 +1,6 @@
 import assert = require("assert");
 import { Semaphore } from "./semaphore";
+import { TryError } from "./exceptions";
 
 
 export class FiniteSemaphore {
