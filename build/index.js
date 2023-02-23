@@ -24,4 +24,5 @@ __exportStar(require("./condition-variable"), exports);
 __exportStar(require("./semque"), exports);
 __exportStar(require("./finite-semaphore"), exports);
 __exportStar(require("./exceptions"), exports);
+__exportStar(require("./manual-promise"), exports);
 //# sourceMappingURL=index.js.map

@@ -8,3 +8,4 @@ export * from './condition-variable';
 export * from './semque';
 export * from './finite-semaphore';
 export * from './exceptions';
+export * from './manual-promise';
