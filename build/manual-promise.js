@@ -6,7 +6,6 @@ class ManualPromise {
     constructor() {
         this.ee = new events_1.EventEmitter();
         this.native = (0, events_1.once)(this.ee, 'resolve');
-        this.native.then(() => { }, () => { });
     }
     resolve(value) {
         this.ee.emit('resolve', value);

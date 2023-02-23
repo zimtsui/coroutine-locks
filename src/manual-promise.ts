@@ -11,7 +11,6 @@ export class ManualPromise<T> implements PromiseLike<T> {
 
 	public constructor() {
 		this.native = once(this.ee, 'resolve');
-		this.native.then(() => { }, () => { });
 	}
 
 	public resolve(value: T | PromiseLike<T>): void {
