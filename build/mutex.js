@@ -4,22 +4,22 @@ exports.Mutex = void 0;
 const finite_semaphore_1 = require("./finite-semaphore");
 class Mutex {
     constructor(locked = false) {
-        this.finsem = new finite_semaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
+        this.finisem = new finite_semaphore_1.FiniteSemaphore(locked ? 0 : 1, 1);
     }
     async lock() {
-        await this.finsem.p();
+        await this.finisem.p();
     }
     tryLock() {
-        this.finsem.tryP();
+        this.finisem.tryP();
     }
     /**
      * @throws {@link TryError}
      */
     unlock() {
-        this.finsem.tryV();
+        this.finisem.tryV();
     }
     throw(err) {
-        this.finsem.throw(err);
+        this.finisem.throw(err);
     }
 }
 exports.Mutex = Mutex;

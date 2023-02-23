@@ -5,27 +5,27 @@ const deque_1 = require("@zimtsui/deque");
 const finite_semaphore_1 = require("./finite-semaphore");
 class Semque {
     constructor(resources = [], capacity = Number.POSITIVE_INFINITY) {
-        this.finsem = new finite_semaphore_1.FiniteSemaphore(resources.length, capacity);
+        this.finisem = new finite_semaphore_1.FiniteSemaphore(resources.length, capacity);
         this.deque = new deque_1.Deque(resources);
     }
     async push(x) {
-        await this.finsem.v();
+        await this.finisem.v();
         this.deque.push(x);
     }
     tryPush(x) {
-        this.finsem.tryV();
+        this.finisem.tryV();
         this.deque.push(x);
     }
     async pop() {
-        await this.finsem.p();
+        await this.finisem.p();
         return this.deque.pop();
     }
     tryPop() {
-        this.finsem.tryP();
+        this.finisem.tryP();
         return this.deque.pop();
     }
     throw(err) {
-        this.finsem.throw(err);
+        this.finisem.throw(err);
     }
 }
 exports.Semque = Semque;

@@ -3,37 +3,37 @@ import { FiniteSemaphore } from "./finite-semaphore";
 
 export class Semque<T> {
 	private deque: Deque<T>;
-	private finsem: FiniteSemaphore;
+	private finisem: FiniteSemaphore;
 
 	public constructor(
 		resources: T[] = [],
 		capacity = Number.POSITIVE_INFINITY,
 	) {
-		this.finsem = new FiniteSemaphore(resources.length, capacity);
+		this.finisem = new FiniteSemaphore(resources.length, capacity);
 		this.deque = new Deque(resources);
 	}
 
 	public async push(x: T): Promise<void> {
-		await this.finsem.v();
+		await this.finisem.v();
 		this.deque.push(x);
 	}
 
 	public tryPush(x: T): void {
-		this.finsem.tryV();
+		this.finisem.tryV();
 		this.deque.push(x);
 	}
 
 	public async pop(): Promise<T> {
-		await this.finsem.p();
+		await this.finisem.p();
 		return this.deque.pop();
 	}
 
 	public tryPop(): T {
-		this.finsem.tryP();
+		this.finisem.tryP();
 		return this.deque.pop();
 	}
 
 	public throw(err: Error): void {
-		this.finsem.throw(err);
+		this.finisem.throw(err);
 	}
 }

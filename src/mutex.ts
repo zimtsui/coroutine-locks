@@ -3,28 +3,28 @@ import { FiniteSemaphore } from './finite-semaphore';
 
 
 export class Mutex {
-    private finsem: FiniteSemaphore;
+    private finisem: FiniteSemaphore;
 
     constructor(locked = false) {
-        this.finsem = new FiniteSemaphore(locked ? 0 : 1, 1);
+        this.finisem = new FiniteSemaphore(locked ? 0 : 1, 1);
     }
 
     public async lock(): Promise<void> {
-        await this.finsem.p();
+        await this.finisem.p();
     }
 
     public tryLock(): void {
-        this.finsem.tryP();
+        this.finisem.tryP();
     }
 
     /**
      * @throws {@link TryError}
      */
     public unlock(): void {
-        this.finsem.tryV();
+        this.finisem.tryV();
     }
 
     public throw(err: Error): void {
-        this.finsem.throw(err);
+        this.finisem.throw(err);
     }
 }
