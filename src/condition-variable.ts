@@ -1,5 +1,5 @@
 import { Mutex } from './mutex';
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from './manual-promise';
 import assert = require('assert');
 
 
@@ -11,7 +11,7 @@ export class ConditionVariable {
      * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
      */
     public async wait(
-        // mutex?: Mutex,
+        mutex?: Mutex,
     ): Promise<void> {
         assert(this.err === null, <Error>this.err);
         // if (mutex) mutex.unlock();

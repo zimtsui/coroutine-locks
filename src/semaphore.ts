@@ -1,5 +1,5 @@
 import assert = require('assert');
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from './manual-promise';
 import { TryError } from './exceptions';
 
 

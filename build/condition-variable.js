@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConditionVariable = void 0;
-const manual_promise_1 = require("@zimtsui/manual-promise");
+const manual_promise_1 = require("./manual-promise");
 const assert = require("assert");
 class ConditionVariable {
     constructor() {
@@ -11,9 +11,7 @@ class ConditionVariable {
     /**
      * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
      */
-    async wait(
-    // mutex?: Mutex,
-    ) {
+    async wait(mutex) {
         assert(this.err === null, this.err);
         // if (mutex) mutex.unlock();
         const listener = new manual_promise_1.ManualPromise();

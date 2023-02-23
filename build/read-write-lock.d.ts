@@ -1,4 +1,4 @@
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from './manual-promise';
 /**
  * Read write lock - Write starvation
  */

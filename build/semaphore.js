@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Semaphore = void 0;
 const assert = require("assert");
-const manual_promise_1 = require("@zimtsui/manual-promise");
+const manual_promise_1 = require("./manual-promise");
 const exceptions_1 = require("./exceptions");
 class Semaphore {
     constructor(resourceCount = 0) {

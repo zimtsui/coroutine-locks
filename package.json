@@ -18,8 +18,9 @@
   "author": "Zim",
   "dependencies": {
     "@types/assert": "^1.5.6",
+    "@types/events": "^3.0.0",
     "@zimtsui/deque": "^0.0.7",
-    "@zimtsui/manual-promise": "^0.0.6",
-    "assert": "^1.5.0"
+    "assert": "^1.5.0",
+    "events": "^3.3.0"
   }
 }
