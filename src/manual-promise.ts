@@ -10,7 +10,7 @@ export class ManualPromise<T> implements PromiseLike<T> {
 	private ee = new EventEmitter();
 
 	public constructor() {
-		this.native = once(this.ee, 'resolve');
+		this.native = once<[T]>(this.ee, 'resolve').then(([promise]) => promise);
 	}
 
 	public resolve(value: T | PromiseLike<T>): void {

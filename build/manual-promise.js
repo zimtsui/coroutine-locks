@@ -5,7 +5,7 @@ const events_1 = require("events");
 class ManualPromise {
     constructor() {
         this.ee = new events_1.EventEmitter();
-        this.native = (0, events_1.once)(this.ee, 'resolve');
+        this.native = (0, events_1.once)(this.ee, 'resolve').then(([promise]) => promise);
     }
     resolve(value) {
         this.ee.emit('resolve', value);
