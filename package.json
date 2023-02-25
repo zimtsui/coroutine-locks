@@ -21,6 +21,7 @@
     "@types/events": "^3.0.0",
     "@zimtsui/deque": "^0.0.7",
     "assert": "^1.5.0",
+    "autobind-decorator": "^2.4.0",
     "events": "^3.3.0"
   }
 }

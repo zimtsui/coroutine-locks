@@ -1,4 +1,5 @@
 import { EventEmitter, once } from "events";
+import { boundMethod } from "autobind-decorator";
 
 
 declare module 'events' {
@@ -13,10 +14,18 @@ export class ManualPromise<T> implements PromiseLike<T> {
 		this.native = once<[T]>(this.ee, 'resolve').then(([promise]) => promise);
 	}
 
+	/**
+	 *  @decorator `@boundMethod`
+	 */
+	@boundMethod
 	public resolve(value: T | PromiseLike<T>): void {
 		this.ee.emit('resolve', value);
 	}
 
+	/**
+	 *  @decorator `@boundMethod`
+	 */
+	@boundMethod
 	public reject(reason?: any): void {
 		this.ee.emit('resolve', Promise.reject(reason));
 	}
