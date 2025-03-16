@@ -1,6 +1,6 @@
 {
   "name": "@zimtsui/coroutine-locks",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "",
   "main": "./build/exports.js",
   "types": "./build/exports.d.ts",
