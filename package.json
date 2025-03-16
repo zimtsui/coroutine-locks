@@ -1,9 +1,13 @@
 {
   "name": "@zimtsui/coroutine-locks",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "",
   "main": "./build/exports.js",
   "types": "./build/exports.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b ./src/tsconfig.json",
