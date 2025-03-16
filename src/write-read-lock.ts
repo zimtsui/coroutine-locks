@@ -1,4 +1,4 @@
-import { ReadWriteLock } from './read-write-lock';
+import { ReadWriteLock } from './read-write-lock.js';
 
 /**
  * Write read lock - Write priority

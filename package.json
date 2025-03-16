@@ -2,14 +2,14 @@
   "name": "@zimtsui/coroutine-locks",
   "version": "0.0.15",
   "description": "",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/exports.js",
+  "types": "./build/exports.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b ./src/tsconfig.json",
     "clean": "rm -rf ./build",
     "rebuild": "npm run clean && npm run build",
-    "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/index.ts"
+    "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts"
   },
   "repository": {
     "type": "git",
@@ -17,11 +17,8 @@
   },
   "author": "Zim",
   "dependencies": {
-    "@types/assert": "^1.5.6",
-    "@types/events": "^3.0.0",
-    "@zimtsui/deque": "^0.0.7",
-    "assert": "^1.5.0",
-    "autobind-decorator": "^2.4.0",
-    "events": "^3.3.0"
+    "@types/assert": "^1.5.11",
+    "assert": "^1.5.1",
+    "autobind-decorator": "^2.4.0"
   }
 }

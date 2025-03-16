@@ -1,12 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "CommonJS",
-        "lib": [
-            "esnext"
-        ],
-        "sourceMap": true,
-        "strict": true,
-        "experimentalDecorators": true
-    }
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "preserve",
+		"lib": [
+			"esnext"
+		],
+		"sourceMap": true,
+		"strict": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true
+	}
 }

@@ -1,14 +1,13 @@
-import assert = require('assert');
-import { ManualPromise } from './manual-promise';
-import { TryError } from './exceptions';
+import assert from 'assert';
+import { FailureToTry, Consumer } from './types.js';
 
 
 /**
  * Read write lock - Write starvation
  */
 export class ReadWriteLock {
-	protected readers: ManualPromise<void>[] = [];
-	protected writers: ManualPromise<void>[] = [];
+	protected readers: Consumer[] = [];
+	protected writers: Consumer[] = [];
 	protected reading = 0;
 	protected writing = false;
 	private err: Error | null = null;
@@ -27,53 +26,55 @@ export class ReadWriteLock {
 	}
 
 	public async readLock(): Promise<void> {
-		assert(this.err === null, <Error>this.err);
-		const reader = new ManualPromise<void>();
-		this.readers.push(reader);
+		assert(!this.err, <Error>this.err);
+		const p = new Promise<void>((resolve, reject) => {
+			this.readers.push({resolve, reject});
+		});
 		this.refresh();
-		await reader;
+		await p;
 	}
 
 	public tryReadLock(): void {
-		assert(this.err === null, <Error>this.err);
-		assert(
-			!this.writing,
-			new TryError(),
-		);
+		assert(!this.err, <Error>this.err);
+		assert(!this.writing, new FailureToTry());
 		this.reading++;
 	}
 
 	public async writeLock(): Promise<void> {
-		assert(this.err === null, <Error>this.err);
-		const writer = new ManualPromise<void>();
-		this.writers.push(writer);
+		assert(!this.err, <Error>this.err);
+		const p = new Promise<void>((resolve, reject) => {
+			this.writers.push({resolve, reject});
+		});
 		this.refresh();
-		await writer;
+		await p;
 	}
 
+	/**
+	 * @throws {@link FailureToTry}
+	 */
 	public tryWriteLock(): void {
-		assert(this.err === null, <Error>this.err);
-		assert(!this.reading, new TryError());
-		assert(!this.writing, new TryError());
+		assert(!this.err, <Error>this.err);
+		assert(!this.reading, new FailureToTry());
+		assert(!this.writing, new FailureToTry());
 		this.writing = true;
 	}
 
 	/**
-	 * @throws {@link TryError} Not read locked yet.
+	 * @throws {@link FailureToTry} Not read locked yet.
 	 */
 	public readUnlock(): void {
-		assert(this.err === null, <Error>this.err);
-		assert(this.reading, new TryError());
+		assert(!this.err, <Error>this.err);
+		assert(this.reading, new FailureToTry());
 		this.reading--;
 		this.refresh();
 	}
 
 	/**
-	 * @throws {@link TryError} Not write locked yet.
+	 * @throws {@link FailureToTry} Not write locked yet.
 	 */
 	public writeUnlock(): void {
-		assert(this.err === null, <Error>this.err);
-		assert(this.writing, new TryError());
+		assert(!this.err, <Error>this.err);
+		assert(this.writing, new FailureToTry());
 		this.writing = false;
 		this.refresh();
 	}
