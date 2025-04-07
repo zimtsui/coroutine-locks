@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { FailureToTry } from './types.js';
+import { FailureToTry, Consumer } from './types.js';
 import { Mutex } from './mutex.js';
 import { Semaphore } from './semaphore.js';
 
@@ -11,29 +11,35 @@ export class ReadWriteLock {
 	private readers = new Semaphore();
 	private readersLock = new Mutex();
 	private occupied = new Mutex();
+	private err: Error | null = null;
 
-	public async readlock(): Promise<void> {
+	public async readLock(): Promise<void> {
+		assert(!this.err, <Error>this.err);
 		await this.readersLock.acquire();
 		if (!this.readers.getSize()) await this.occupied.acquire();
 		this.readers.increase();
 		this.readersLock.release();
 	}
 
-	public async writelock(): Promise<void> {
+	public async writeLock(): Promise<void> {
+		assert(!this.err, <Error>this.err);
 		await this.occupied.acquire();
 	}
 
-	public readunlock(): void {
+	public readUnlock(): void {
+		assert(!this.err, <Error>this.err);
 		assert(this.readers.getSize());
-		this.readers.trydecrease();
+		this.readers.tryDecrease();
 		if (!this.readers.getSize()) this.occupied.release();
 	}
 
-	public writeunlock(): void {
+	public writeUnlock(): void {
+		assert(!this.err, <Error>this.err);
 		this.occupied.release();
 	}
 
 	public throw(err: Error): void {
+		this.err = err;
 		this.readers.throw(err);
 		this.readersLock.throw(err);
 		this.occupied.throw(err);

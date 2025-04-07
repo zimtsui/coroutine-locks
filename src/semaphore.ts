@@ -9,7 +9,6 @@ export class Semaphore {
 	public constructor(private size: number = 0) { }
 
 	public getSize(): number {
-		assert(!this.err, this.err as Error);
 		return this.size;
 	}
 
@@ -21,7 +20,7 @@ export class Semaphore {
 	}
 
 	public async decrease(): Promise<void> {
-		assert(!this.err, this.err as Error);
+		assert(!this.err, <Error>this.err);
 		const p = new Promise<void>((resolve, reject) => {
 			this.consumers.push({resolve, reject});
 		});
@@ -32,14 +31,14 @@ export class Semaphore {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public trydecrease(): void {
-		assert(!this.err, this.err as Error);
+	public tryDecrease(): void {
+		assert(!this.err, <Error>this.err);
 		assert(this.size, new FailureToTry());
 		this.size--;
 	}
 
 	public increase(): void {
-		assert(!this.err, this.err as Error);
+		assert(!this.err, <Error>this.err);
 		this.size++;
 		this.refresh();
 	}

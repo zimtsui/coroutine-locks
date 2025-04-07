@@ -20,15 +20,15 @@ export class Mutex {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryacquire(): void {
-		this.finisem.trydecrease();
+	public tryAcquire(): void {
+		this.finisem.tryDecrease();
 	}
 
 	/**
 	 * @throws {@link FailureToTry} if the mutex is already unlocked
 	 */
 	public release(): void {
-		this.finisem.tryincrease();
+		this.finisem.tryIncrease();
 	}
 
 	public throw(err: Error): void {

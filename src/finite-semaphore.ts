@@ -27,8 +27,8 @@ export class FiniteSemaphore {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryincrease(): void {
-		this.free.trydecrease();
+	public tryIncrease(): void {
+		this.free.tryDecrease();
 		this.used.increase();
 	}
 
@@ -40,8 +40,8 @@ export class FiniteSemaphore {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public trydecrease(): void {
-		this.used.trydecrease();
+	public tryDecrease(): void {
+		this.used.tryDecrease();
 		this.free.increase();
 	}
 
