@@ -5,42 +5,48 @@ import { FailureToTry } from './types.js';
 
 export class FiniteSemaphore {
 	private used: Semaphore;
-	private unused: Semaphore;
+	private free: Semaphore;
 
-	public constructor(capacity: number, resources = 0) {
-		assert(resources <= capacity);
-		this.used = new Semaphore(resources);
-		this.unused = new Semaphore(capacity - resources);
+	public constructor(capacity: number, size = 0) {
+		assert(Number.isInteger(capacity) && capacity >= 0);
+		assert(Number.isInteger(size) && size >= 0);
+		assert(size <= capacity);
+		this.used = new Semaphore(size);
+		this.free = new Semaphore(capacity - size);
 	}
 
-	public async v(): Promise<void> {
-		await this.unused.p();
-		this.used.v();
+	public getSize(): number {
+		return this.used.getSize();
+	}
+
+	public async increase(): Promise<void> {
+		await this.free.decrease();
+		this.used.increase();
 	}
 
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryV(): void {
-		this.unused.tryp();
-		this.used.v();
+	public tryIncrease(): void {
+		this.free.tryDecrease();
+		this.used.increase();
 	}
 
-	public async p(): Promise<void> {
-		await this.used.p();
-		this.unused.v();
+	public async decrease(): Promise<void> {
+		await this.used.decrease();
+		this.free.increase();
 	}
 
 	/**
-	 * @throws {FailureToTry}
+	 * @throws {@link FailureToTry}
 	 */
-	public tryP(): void {
-		this.used.tryp();
-		this.unused.v();
+	public tryDecrease(): void {
+		this.used.tryDecrease();
+		this.free.increase();
 	}
 
 	public throw(err: Error): void {
 		this.used.throw(err);
-		this.unused.throw(err);
+		this.free.throw(err);
 	}
 }

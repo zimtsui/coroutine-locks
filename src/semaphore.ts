@@ -6,17 +6,22 @@ export class Semaphore {
 	private consumers: Consumer[] = [];
 	private err: Error | null = null;
 
-	constructor(private resources: number = 0) { }
+	public constructor(private size: number = 0) { }
+
+	public getSize(): number {
+		assert(!this.err, this.err as Error);
+		return this.size;
+	}
 
 	private refresh(): void {
-		if (this.resources && this.consumers.length) {
-			this.consumers.pop()!.resolve();
-			this.resources--;
+		if (this.size && this.consumers.length) {
+			this.consumers.shift()!.resolve();
+			this.size--;
 		}
 	}
 
-	public async p(): Promise<void> {
-		assert(!this.err, <Error>this.err);
+	public async decrease(): Promise<void> {
+		assert(!this.err, this.err as Error);
 		const p = new Promise<void>((resolve, reject) => {
 			this.consumers.push({resolve, reject});
 		});
@@ -27,15 +32,15 @@ export class Semaphore {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryp(): void {
-		assert(!this.err, <Error>this.err);
-		assert(this.resources, new FailureToTry());
-		this.resources--;
+	public tryDecrease(): void {
+		assert(!this.err, this.err as Error);
+		assert(this.size, new FailureToTry());
+		this.size--;
 	}
 
-	public v(): void {
-		assert(!this.err, <Error>this.err);
-		this.resources++;
+	public increase(): void {
+		assert(!this.err, this.err as Error);
+		this.size++;
 		this.refresh();
 	}
 

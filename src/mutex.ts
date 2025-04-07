@@ -5,26 +5,30 @@ import { FailureToTry } from './types.js';
 export class Mutex {
 	private finisem: FiniteSemaphore;
 
-	public constructor(locked = false) {
-		this.finisem = new FiniteSemaphore(1, locked ? 0 : 1);
+	public constructor(acquired = false) {
+		this.finisem = new FiniteSemaphore(1, acquired ? 0 : 1);
 	}
 
-	public async lock(): Promise<void> {
-		await this.finisem.p();
+	public isAcquired(): boolean {
+		return this.finisem.getSize() === 0;
+	}
+
+	public async acquire(): Promise<void> {
+		await this.finisem.decrease();
 	}
 
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryLock(): void {
-		this.finisem.tryP();
+	public tryAcquire(): void {
+		this.finisem.tryDecrease();
 	}
 
 	/**
 	 * @throws {@link FailureToTry} if the mutex is already unlocked
 	 */
-	public unlock(): void {
-		this.finisem.tryV();
+	public release(): void {
+		this.finisem.tryIncrease();
 	}
 
 	public throw(err: Error): void {
