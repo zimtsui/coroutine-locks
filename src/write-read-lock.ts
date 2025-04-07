@@ -9,9 +9,9 @@ export class WriteReadLock {
 	private rwlock = new ReadWriteLock();
 	private gate = new Mutex();
 
-	public async readLock(): Promise<void> {
+	public async readlock(): Promise<void> {
 		await this.gate.acquire();
-		await this.rwlock.readLock();
+		await this.rwlock.readlock();
 		this.gate.release();
 	}
 
@@ -21,9 +21,9 @@ export class WriteReadLock {
 		this.gate.release();
 	}
 
-	public async writeLock(): Promise<void> {
+	public async writelock(): Promise<void> {
 		await this.gate.acquire();
-		await this.rwlock.writeLock();
+		await this.rwlock.writelock();
 		this.gate.release();
 	}
 

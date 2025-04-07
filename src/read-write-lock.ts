@@ -12,7 +12,7 @@ export class ReadWriteLock {
 	private readersLock = new Mutex();
 	private occupied = new Mutex();
 
-	public async readLock(): Promise<void> {
+	public async readlock(): Promise<void> {
 		await this.readersLock.acquire();
 		if (!this.readers.getSize()) await this.occupied.acquire();
 		this.readers.increase();
@@ -26,7 +26,7 @@ export class ReadWriteLock {
 		this.readersLock.release();
 	}
 
-	public async writeLock(): Promise<void> {
+	public async writelock(): Promise<void> {
 		await this.occupied.acquire();
 	}
 
