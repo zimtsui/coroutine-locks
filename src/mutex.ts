@@ -9,7 +9,7 @@ export class Mutex {
 		this.finisem = new FiniteSemaphore(1, acquired ? 0 : 1);
 	}
 
-	public isAcquired(): boolean {
+	public isacquired(): boolean {
 		return this.finisem.getSize() === 0;
 	}
 
@@ -20,15 +20,15 @@ export class Mutex {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryAcquire(): void {
-		this.finisem.tryDecrease();
+	public tryacquire(): void {
+		this.finisem.trydecrease();
 	}
 
 	/**
 	 * @throws {@link FailureToTry} if the mutex is already unlocked
 	 */
 	public release(): void {
-		this.finisem.tryIncrease();
+		this.finisem.tryincrease();
 	}
 
 	public throw(err: Error): void {

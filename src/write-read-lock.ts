@@ -15,18 +15,30 @@ export class WriteReadLock {
 		this.gate.release();
 	}
 
+	public tryreadlock(): void {
+		this.gate.tryacquire();
+		this.rwlock.tryreadlock();
+		this.gate.release();
+	}
+
 	public async writeLock(): Promise<void> {
 		await this.gate.acquire();
 		await this.rwlock.writeLock();
 		this.gate.release();
 	}
 
-	public readUnlock(): void {
-		this.rwlock.readUnlock();
+	public trywritelock(): void {
+		this.gate.tryacquire();
+		this.rwlock.trywritelock();
+		this.gate.release();
 	}
 
-	public writeUnlock(): void {
-		this.rwlock.writeUnlock();
+	public readunlock(): void {
+		this.rwlock.readunlock();
+	}
+
+	public writeunlock(): void {
+		this.rwlock.writeunlock();
 	}
 
 	public throw(err: Error): void {

@@ -31,7 +31,7 @@ export class Semaphore {
 	/**
 	 * @throws {@link FailureToTry}
 	 */
-	public tryDecrease(): void {
+	public trydecrease(): void {
 		assert(!this.err, <Error>this.err);
 		assert(this.size, new FailureToTry());
 		this.size--;
