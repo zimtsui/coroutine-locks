@@ -1,10 +1,12 @@
 import assert from 'assert';
-import { Failure, Consumer } from './types.js';
+import { Failure } from './failure.js';
+import { Consumer } from './consumer.js';
+
 
 
 export class Semaphore {
 	private consumers: Consumer[] = [];
-	private err: Error | null = null;
+	private error: Error | null = null;
 
 	public constructor(private size: number = 0) { }
 
@@ -12,7 +14,7 @@ export class Semaphore {
 		return this.size;
 	}
 
-	private refresh(): void {
+	private flush(): void {
 		if (this.size && this.consumers.length) {
 			this.consumers.shift()!.resolve();
 			this.size--;
@@ -20,11 +22,11 @@ export class Semaphore {
 	}
 
 	public async decrease(): Promise<void> {
-		assert(!this.err, this.err as Error);
+		assert(!this.error, this.error as Error);
 		const p = new Promise<void>((resolve, reject) => {
 			this.consumers.push({resolve, reject});
 		});
-		this.refresh();
+		this.flush();
 		return await p;
 	}
 
@@ -32,20 +34,20 @@ export class Semaphore {
 	 * @throws {@link Failure}
 	 */
 	public decreaseSync(): void {
-		assert(!this.err, this.err as Error);
+		assert(!this.error, this.error as Error);
 		assert(this.size, new Failure());
 		this.size--;
 	}
 
 	public increase(): void {
-		assert(!this.err, this.err as Error);
+		assert(!this.error, this.error as Error);
 		this.size++;
-		this.refresh();
+		this.flush();
 	}
 
-	public throw(err: Error): void {
-		this.err = err;
-		for (const consumer of this.consumers) consumer.reject(err);
+	public throw(error: Error): void {
+		this.error = error;
+		for (const consumer of this.consumers) consumer.reject(error);
 		this.consumers = [];
 	}
 }

@@ -1,6 +1,10 @@
+/*
+	当使用双信号量实现有限信号量时，协程切换时对象可能处于中间状态。
+
+	因此不能简单地实现各种方法的同步版本。
+*/
 import assert from 'assert';
 import { Semaphore } from './semaphore.js';
-import { Failure } from './types.js';
 
 
 export class FiniteSemaphore {
@@ -15,8 +19,9 @@ export class FiniteSemaphore {
 		this.free = new Semaphore(capacity - size);
 	}
 
-	public getSize(): number {
-		return this.used.getSize();
+	public async decrease(): Promise<void> {
+		await this.used.decrease();
+		this.free.increase();
 	}
 
 	public async increase(): Promise<void> {
@@ -24,33 +29,8 @@ export class FiniteSemaphore {
 		this.used.increase();
 	}
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public increaseSync(): void {
-		this.free.decreaseSync();
-		this.used.increase();
-	}
-
-	public increaseTry(): void {
-		try { this.increaseSync(); } catch(e) {}
-	}
-
-	public async decrease(): Promise<void> {
-		await this.used.decrease();
-		this.free.increase();
-	}
-
-	/**
-	 * @throws {@link Failure}
-	 */
-	public decreaseSync(): void {
-		this.used.decreaseSync();
-		this.free.increase();
-	}
-
-	public throw(err: Error): void {
-		this.used.throw(err);
-		this.free.throw(err);
+	public throw(error: Error): void {
+		this.used.throw(error);
+		this.free.throw(error);
 	}
 }

@@ -1,41 +1,44 @@
-import { FiniteSemaphore } from './finite-semaphore.js';
-import { Failure } from './types.js';
+import { Semaphore } from './semaphore.js';
+import { Failure } from './failure.js';
 
 
 export class Mutex {
-	private finisem: FiniteSemaphore;
+	private sem: Semaphore;
 
 	public constructor(acquired = false) {
-		this.finisem = new FiniteSemaphore(1, acquired ? 0 : 1);
+		this.sem = new Semaphore(acquired ? 0 : 1);
 	}
 
-	public isacquired(): boolean {
-		return this.finisem.getSize() === 0;
+	public isAcquired(): boolean {
+		return !this.sem.getSize();
 	}
 
 	public async acquire(): Promise<void> {
-		await this.finisem.decrease();
+		await this.sem.decrease();
 	}
 
 	/**
 	 * @throws {@link Failure}
 	 */
 	public acquireSync(): void {
-		this.finisem.decreaseSync();
+		this.sem.decreaseSync();
 	}
 
 	/**
-	 * @throws {@link Failure} if the mutex is already unlocked
+	 * @throws {@link Failure}
 	 */
 	public release(): void {
-		this.finisem.increaseSync();
+		if (this.isAcquired())
+			this.sem.increase();
+		else
+			throw new Failure();
 	}
 
 	public releaseTry(): void {
-		this.finisem.increaseTry();
+		try { this.release(); } catch (e) {}
 	}
 
 	public throw(err: Error): void {
-		this.finisem.throw(err);
+		this.sem.throw(err);
 	}
 }
