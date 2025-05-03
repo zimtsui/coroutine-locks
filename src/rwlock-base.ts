@@ -10,6 +10,16 @@ export abstract class RWLockBase {
 	protected writing = false;
 	protected error: Error | null = null;
 
+	public isAcquiredRead(): boolean {
+		assert(!this.error, this.error as Error);
+		return !!this.reading;
+	}
+
+	public isAcquiredWrite(): boolean {
+		assert(!this.error, this.error as Error);
+		return this.writing;
+	}
+
 	public async acquireRead(): Promise<void> {
 		assert(!this.error, this.error as Error);
 		const p = new Promise<void>((resolve, reject) => {
