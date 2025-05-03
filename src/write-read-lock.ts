@@ -1,5 +1,6 @@
 import { ReadWriteLock } from './read-write-lock.js';
 import { Mutex } from './mutex.js';
+import { Failure } from './types.js';
 
 
 /**
@@ -7,42 +8,70 @@ import { Mutex } from './mutex.js';
  */
 export class WriteReadLock {
 	private rwlock = new ReadWriteLock();
-	private gate = new Mutex();
+	private lounge = new Mutex();
 
-	public async readlock(): Promise<void> {
-		await this.gate.acquire();
-		await this.rwlock.readlock();
-		this.gate.release();
+	public async acquireRead(): Promise<void> {
+		await this.lounge.acquire();
+		await this.rwlock.acquireRead();
+		this.lounge.release();
 	}
 
-	public tryreadlock(): void {
-		this.gate.acquireSync();
-		this.rwlock.tryreadlock();
-		this.gate.release();
+	/**
+	 * @throws {@link Failure}
+	 */
+	public acquireReadSync(): void {
+		this.lounge.acquireSync();
+		this.rwlock.acquireReadSync();
+		this.lounge.release();
 	}
 
-	public async writelock(): Promise<void> {
-		await this.gate.acquire();
-		await this.rwlock.writelock();
-		this.gate.release();
+	public acquireReadTry(): void {
+		try { this.acquireReadSync(); } catch (e) {}
 	}
 
-	public trywritelock(): void {
-		this.gate.acquireSync();
-		this.rwlock.trywritelock();
-		this.gate.release();
+	public async acquireWrite(): Promise<void> {
+		await this.lounge.acquire();
+		await this.rwlock.acquireWrite();
+		this.lounge.release();
 	}
 
-	public readunlock(): void {
-		this.rwlock.readunlock();
+	/**
+	 * @throws {@link Failure}
+	 */
+	public acquireWriteSync(): void {
+		this.lounge.acquireSync();
+		this.rwlock.acquireWriteSync();
+		this.lounge.release();
 	}
 
-	public writeunlock(): void {
-		this.rwlock.writeunlock();
+	public acquireWriteTry(): void {
+		try { this.acquireWriteSync(); } catch (e) {}
+	}
+
+	/**
+	 * @throws {@link Failure}
+	 */
+	public releaseRead(): void {
+		this.rwlock.releaseRead();
+	}
+
+	public releaseReadTry(): void {
+		try { this.releaseRead(); } catch (e) {}
+	}
+
+	/**
+	 * @throws {@link Failure}
+	 */
+	public releaseWrite(): void {
+		this.rwlock.releaseWrite();
+	}
+
+	public releaseWriteTry(): void {
+		try { this.releaseWrite(); } catch (e) {}
 	}
 
 	public throw(err: Error): void {
 		this.rwlock.throw(err);
-		this.gate.throw(err);
+		this.lounge.throw(err);
 	}
 }

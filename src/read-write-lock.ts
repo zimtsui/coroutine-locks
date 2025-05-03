@@ -12,36 +12,64 @@ export class ReadWriteLock {
 	private readersLock = new Mutex();
 	private occupied = new Mutex();
 
-	public async readlock(): Promise<void> {
+	public async acquireRead(): Promise<void> {
 		await this.readersLock.acquire();
 		if (!this.readers.getSize()) await this.occupied.acquire();
 		this.readers.increase();
 		this.readersLock.release();
 	}
 
-	public tryreadlock(): void {
+	/**
+	 * @throws {@link Failure}
+	 */
+	public acquireReadSync(): void {
 		this.readersLock.acquireSync();
 		if (!this.readers.getSize()) this.occupied.acquireSync();
 		this.readers.increase();
 		this.readersLock.release();
 	}
 
-	public async writelock(): Promise<void> {
+	public acquireReadTry(): void {
+		try { this.acquireReadSync(); } catch (e) {}
+	}
+
+	public async acquireWrite(): Promise<void> {
 		await this.occupied.acquire();
 	}
 
-	public trywritelock(): void {
+	/**
+	 * @throws {@link Failure}
+	 */
+	public acquireWriteSync(): void {
 		this.occupied.acquireSync();
 	}
 
-	public readunlock(): void {
+	public acquireWriteTry(): void {
+		try { this.acquireWriteSync(); } catch (e) {}
+	}
+
+	/**
+	 * @throws {@link Failure}
+	 */
+	public releaseRead(): void {
 		assert(this.readers.getSize(), new Failure());
 		this.readers.decreaseSync();
 		if (!this.readers.getSize()) this.occupied.release();
 	}
 
-	public writeunlock(): void {
+	public releaseReadTry(): void {
+		try { this.releaseRead(); } catch (e) {}
+	}
+
+	/**
+	 * @throws {@link Failure}
+	 */
+	public releaseWrite(): void {
 		this.occupied.release();
+	}
+
+	public releaseWriteTry(): void {
+		this.occupied.releaseTry();
 	}
 
 	public throw(err: Error): void {
