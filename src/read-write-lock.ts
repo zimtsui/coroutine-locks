@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { FailureToTry } from './types.js';
+import { Failure } from './types.js';
 import { Mutex } from './mutex.js';
 import { Semaphore } from './semaphore.js';
 
@@ -20,8 +20,8 @@ export class ReadWriteLock {
 	}
 
 	public tryreadlock(): void {
-		this.readersLock.tryacquire();
-		if (!this.readers.getSize()) this.occupied.tryacquire();
+		this.readersLock.acquireSync();
+		if (!this.readers.getSize()) this.occupied.acquireSync();
 		this.readers.increase();
 		this.readersLock.release();
 	}
@@ -31,12 +31,12 @@ export class ReadWriteLock {
 	}
 
 	public trywritelock(): void {
-		this.occupied.tryacquire();
+		this.occupied.acquireSync();
 	}
 
 	public readunlock(): void {
-		assert(this.readers.getSize(), new FailureToTry());
-		this.readers.trydecrease();
+		assert(this.readers.getSize(), new Failure());
+		this.readers.decreaseSync();
 		if (!this.readers.getSize()) this.occupied.release();
 	}
 

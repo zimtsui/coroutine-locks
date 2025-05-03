@@ -1,4 +1,4 @@
-export class FailureToTry extends Error { }
+export class Failure extends Error { }
 
 export interface Consumer {
 	resolve: (resource: void) => void;

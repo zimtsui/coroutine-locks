@@ -1,5 +1,5 @@
 import { FiniteSemaphore } from './finite-semaphore.js';
-import { FailureToTry } from './types.js';
+import { Failure } from './types.js';
 
 
 export class Mutex {
@@ -18,17 +18,21 @@ export class Mutex {
 	}
 
 	/**
-	 * @throws {@link FailureToTry}
+	 * @throws {@link Failure}
 	 */
-	public tryacquire(): void {
-		this.finisem.trydecrease();
+	public acquireSync(): void {
+		this.finisem.decreaseSync();
 	}
 
 	/**
-	 * @throws {@link FailureToTry} if the mutex is already unlocked
+	 * @throws {@link Failure} if the mutex is already unlocked
 	 */
 	public release(): void {
-		this.finisem.tryincrease();
+		this.finisem.increaseSync();
+	}
+
+	public releaseTry(): void {
+		this.finisem.increaseTry();
 	}
 
 	public throw(err: Error): void {

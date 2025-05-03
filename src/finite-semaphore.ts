@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { Semaphore } from './semaphore.js';
-import { FailureToTry } from './types.js';
+import { Failure } from './types.js';
 
 
 export class FiniteSemaphore {
@@ -25,11 +25,15 @@ export class FiniteSemaphore {
 	}
 
 	/**
-	 * @throws {@link FailureToTry}
+	 * @throws {@link Failure}
 	 */
-	public tryincrease(): void {
-		this.free.trydecrease();
+	public increaseSync(): void {
+		this.free.decreaseSync();
 		this.used.increase();
+	}
+
+	public increaseTry(): void {
+		try { this.increaseSync(); } catch(e) {}
 	}
 
 	public async decrease(): Promise<void> {
@@ -38,10 +42,10 @@ export class FiniteSemaphore {
 	}
 
 	/**
-	 * @throws {@link FailureToTry}
+	 * @throws {@link Failure}
 	 */
-	public trydecrease(): void {
-		this.used.trydecrease();
+	public decreaseSync(): void {
+		this.used.decreaseSync();
 		this.free.increase();
 	}
 

@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { FailureToTry, Consumer } from './types.js';
+import { Failure, Consumer } from './types.js';
 
 
 export class Semaphore {
@@ -20,7 +20,7 @@ export class Semaphore {
 	}
 
 	public async decrease(): Promise<void> {
-		assert(!this.err, <Error>this.err);
+		assert(!this.err, this.err as Error);
 		const p = new Promise<void>((resolve, reject) => {
 			this.consumers.push({resolve, reject});
 		});
@@ -29,16 +29,16 @@ export class Semaphore {
 	}
 
 	/**
-	 * @throws {@link FailureToTry}
+	 * @throws {@link Failure}
 	 */
-	public trydecrease(): void {
-		assert(!this.err, <Error>this.err);
-		assert(this.size, new FailureToTry());
+	public decreaseSync(): void {
+		assert(!this.err, this.err as Error);
+		assert(this.size, new Failure());
 		this.size--;
 	}
 
 	public increase(): void {
-		assert(!this.err, <Error>this.err);
+		assert(!this.err, this.err as Error);
 		this.size++;
 		this.refresh();
 	}

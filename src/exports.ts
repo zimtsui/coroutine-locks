@@ -4,4 +4,4 @@ export * from './write-read-lock.js';
 export * from './semaphore.js';
 export * from './condition-variable.js';
 export * from './finite-semaphore.js';
-export { FailureToTry } from './types.js'
+export { Failure } from './types.js'

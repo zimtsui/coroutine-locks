@@ -16,7 +16,7 @@ export class WriteReadLock {
 	}
 
 	public tryreadlock(): void {
-		this.gate.tryacquire();
+		this.gate.acquireSync();
 		this.rwlock.tryreadlock();
 		this.gate.release();
 	}
@@ -28,7 +28,7 @@ export class WriteReadLock {
 	}
 
 	public trywritelock(): void {
-		this.gate.tryacquire();
+		this.gate.acquireSync();
 		this.rwlock.trywritelock();
 		this.gate.release();
 	}
