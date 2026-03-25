@@ -2,12 +2,12 @@ import { StateError } from './exceptions.ts';
 
 
 export class Semaphore<T> implements AsyncIterableIterator<T, never, void> {
-    protected resolvers: PromiseWithResolvers<T>[] = [];
+    protected consumers: PromiseWithResolvers<T>[] = [];
     protected queue: T[] = [];
 
     protected flush(): void {
-        if (this.queue.length && this.resolvers.length)
-            this.resolvers.shift()!.resolve(this.queue.shift()!);
+        if (this.queue.length && this.consumers.length)
+            this.consumers.shift()!.resolve(this.queue.shift()!);
     }
 
     public getSize(): number {
@@ -16,7 +16,7 @@ export class Semaphore<T> implements AsyncIterableIterator<T, never, void> {
 
     public async decrease(): Promise<T> {
         const pwr = Promise.withResolvers<T>();
-        this.resolvers.push(pwr);
+        this.consumers.push(pwr);
         this.flush();
         return await pwr.promise;
     }
@@ -42,8 +42,8 @@ export class Semaphore<T> implements AsyncIterableIterator<T, never, void> {
     }
 
     public unblock(e: unknown): void {
-        for (const resolver of this.resolvers) resolver.reject(e);
-        this.resolvers = [];
+        for (const consumer of this.consumers) consumer.reject(e);
+        this.consumers = [];
     }
 
     public [Symbol.asyncIterator]() {

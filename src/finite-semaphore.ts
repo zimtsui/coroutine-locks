@@ -1,59 +1,56 @@
-import { Mutex } from './mutex.ts';
-import { Semaphore } from './semaphore.ts';
+import { StateError } from './exceptions.ts';
 
 
 export class FiniteSemaphore<T> implements AsyncIterableIterator<T, never, void> {
-    protected used: Semaphore<T>;
-    protected free: Semaphore<void>;
-    protected lock = new Mutex<void>();
+    protected consumers: PromiseWithResolvers<T>[] = [];
+    protected producers: PromiseWithResolvers<void>[] = [];
+    protected queue: T[] = [];
 
-    public constructor(capacity: number) {
-        if (Number.isSafeInteger(capacity) && capacity >= 0) {} else throw new Error();
-        this.used = new Semaphore();
-        this.free = new Semaphore();
-        this.lock.release();
-        for (let i = 0; i < capacity; i++) this.free.increase();
+    public constructor(protected capacity: number) {
+        if (Number.isSafeInteger(this.capacity) && this.capacity >= 0) {} else throw new Error();
     }
 
-    public async getSize(): Promise<number> {
-        await this.lock.acquire();
-        try {
-            return this.used.getSize();
-        } finally {
-            this.lock.release();
-        }
+    public getSize(): number {
+        return Math.min(this.queue.length, this.capacity);
+    }
+
+    protected getRealSize(): number {
+        return this.queue.length - this.consumers.length;
+    }
+
+    protected flush(): void {
+        if (this.queue.length && this.consumers.length)
+            this.consumers.shift()!.resolve(this.queue.shift()!);
+        if (this.queue.length < this.capacity && this.producers.length)
+            this.producers.shift()!.resolve();
     }
 
     public async decrease(): Promise<T> {
-        await this.lock.acquire();
-        try {
-            const x = await this.used.decrease();
-            this.free.increase();
-            return x;
-        } finally {
-            this.lock.release();
-        }
+        const pwr = Promise.withResolvers<T>();
+        this.consumers.push(pwr);
+        this.flush();
+        return await pwr.promise;
     }
 
     public decreaseSync(): T {
-        const x = this.used.decreaseSync();
-        this.free.increase();
+        if (this.getRealSize() > 0) {} else throw new StateError();
+        const x = this.queue.shift()!;
+        this.flush();
         return x;
     }
 
     public async increase(x: T): Promise<void> {
-        await this.lock.acquire();
-        try {
-            await this.free.decrease();
-            this.used.increase(x);
-        } finally {
-            this.lock.release();
-        }
+        const pwr = Promise.withResolvers<void>();
+        this.producers.push(pwr);
+        this.queue.push(x);
+        this.flush();
+        await pwr.promise;
     }
 
     public increaseSync(x: T): void {
-        this.free.decreaseSync();
-        this.used.increase(x);
+        if (this.getRealSize() < this.capacity) {} else throw new StateError();
+        this.queue.push(x);
+        this.flush();
     }
 
     public async next(): Promise<IteratorYieldResult<T>> {
@@ -64,8 +61,10 @@ export class FiniteSemaphore<T> implements AsyncIterableIterator<T, never, void>
     }
 
     public unblock(e: unknown): void {
-        this.used.unblock(e);
-        this.free.unblock(e);
+        for (const consumer of this.consumers) consumer.reject(e);
+        for (const producer of this.producers) producer.reject(e);
+        this.consumers = [];
+        this.producers = [];
     }
 
     public [Symbol.asyncIterator]() {
