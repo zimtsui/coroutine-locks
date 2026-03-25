@@ -1,44 +1,44 @@
 import { Semaphore } from './semaphore.ts';
-import { StateError } from './failure.ts';
+import { StateError } from './exceptions.ts';
 
 
-export class Mutex {
-	private sem: Semaphore;
 
-	public constructor(acquired = false) {
-		this.sem = new Semaphore(acquired ? 0 : 1);
-	}
+export class Mutex<T> {
+    protected sem = new Semaphore<T>();
 
-	public isAcquired(): boolean {
-		return !this.sem.getSize();
-	}
 
-	public async acquire(): Promise<void> {
-		await this.sem.decrease();
-	}
+    public isAcquired(): boolean {
+        return !this.sem.getSize();
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public acquireSync(): void {
-		this.sem.decreaseSync();
-	}
+    public async acquire(): Promise<T> {
+        return await this.sem.decrease();
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public release(): void {
-		if (this.isAcquired())
-			this.sem.increase();
-		else
-			throw new StateError();
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public acquireSync(): T {
+        return this.sem.decreaseSync();
+    }
 
-	public releaseTry(): void {
-		try { this.release(); } catch (e) {}
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public release(x: T): void {
+        if (!this.isAcquired()) {} else throw new StateError();
+        this.sem.increase(x);
+    }
 
-	public throw(err: Error): void {
-		this.sem.throw(err);
-	}
+    public releaseTry(x: T): void {
+        try {
+            this.release(x);
+        } catch (e) {
+            if (e instanceof StateError) {} else throw e;
+        }
+    }
+
+    public throw(e: unknown): void {
+        this.sem.throw(e);
+    }
 }

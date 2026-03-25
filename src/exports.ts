@@ -4,4 +4,4 @@ export * from './wrlock.ts';
 export * from './semaphore.ts';
 export * from './condition-variable.ts';
 export * from './finite-semaphore.ts';
-export { StateError as Failure } from './failure.js'
+export * from './exceptions.ts';

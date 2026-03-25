@@ -1,52 +1,48 @@
-import { StateError } from './failure.ts';
-import { Consumer } from './consumer.ts';
+import { StateError } from './exceptions.ts';
 
 
 
-export class Semaphore {
-	private consumers: Consumer[] = [];
-	private error: Error | null = null;
+export class Semaphore<T> {
+    protected resolvers: PromiseWithResolvers<T>[] = [];
+    protected queue: T[] = [];
+    protected e: unknown;
+    protected available = true;
 
-	public constructor(private size: number = 0) { }
+    protected flush(): void {
+        if (this.queue.length && this.resolvers.length)
+            this.resolvers.shift()!.resolve(this.queue.shift()!);
+    }
 
-	public getSize(): number {
-		return this.size;
-	}
+    public getSize(): number {
+        return this.queue.length;
+    }
 
-	private flush(): void {
-		if (this.size && this.consumers.length) {
-			this.consumers.shift()!.resolve();
-			this.size--;
-		}
-	}
+    public async decrease(): Promise<T> {
+        if (this.available) {} else throw this.e;
+        const pwr = Promise.withResolvers<T>();
+        this.resolvers.push(pwr);
+        this.flush();
+        return await pwr.promise;
+    }
 
-	public async decrease(): Promise<void> {
-		if (this.error) throw this.error as Error;
-		const p = new Promise<void>((resolve, reject) => {
-			this.consumers.push({resolve, reject});
-		});
-		this.flush();
-		return await p;
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public decreaseSync(): T {
+        if (this.available) {} else throw this.e;
+        if (this.queue.length) {} else throw new StateError();
+        return this.queue.shift()!;
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public decreaseSync(): void {
-		if (this.error) throw this.error as Error;
-		if (this.size) {} else throw new StateError();
-		this.size--;
-	}
+    public increase(x: T): void {
+        if (this.available) {} else throw this.e;
+        this.queue.push(x);
+        this.flush();
+    }
 
-	public increase(): void {
-		if (this.error) throw this.error as Error;
-		this.size++;
-		this.flush();
-	}
-
-	public throw(error: Error): void {
-		this.error = error;
-		for (const consumer of this.consumers) consumer.reject(error);
-		this.consumers = [];
-	}
+    public throw(e: unknown): void {
+        this.available = false;
+        this.e = e;
+        for (const resolver of this.resolvers) resolver.reject(e);
+    }
 }

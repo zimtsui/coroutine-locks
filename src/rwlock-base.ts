@@ -1,112 +1,123 @@
-import { StateError } from './failure.ts';
-import type { Consumer } from './consumer.ts';
+import { StateError } from './exceptions.ts';
 
 
 export abstract class RWLockBase {
-	protected readers: Consumer[] = [];
-	protected writers: Consumer[] = [];
-	protected reading = 0;
-	protected writing = false;
-	protected error: Error | null = null;
+    protected readers: PromiseWithResolvers<void>[] = [];
+    protected writers: PromiseWithResolvers<void>[] = [];
+    protected reading = 0;
+    protected writing = false;
+    protected e: unknown;
+    protected available = true;
 
-	public isAcquiredRead(): boolean {
-		if (this.error) throw this.error as Error;
-		return !!this.reading;
-	}
+    public isAcquiredRead(): boolean {
+        if (this.available) {} else throw this.e;
+        return !!this.reading;
+    }
 
-	public isAcquiredWrite(): boolean {
-		if (this.error) throw this.error as Error;
-		return this.writing;
-	}
+    public isAcquiredWrite(): boolean {
+        if (this.available) {} else throw this.e;
+        return this.writing;
+    }
 
-	public async acquireRead(): Promise<void> {
-		if (this.error) throw this.error as Error;
-		const p = new Promise<void>((resolve, reject) => {
-			this.readers.push({resolve, reject});
-		});
-		this.flush();
-		await p;
-	}
+    public async acquireRead(): Promise<void> {
+        if (this.available) {} else throw this.e;
+        const pwr = Promise.withResolvers<void>();
+        this.readers.push(pwr);
+        this.flush();
+        await pwr.promise;
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public acquireReadSync(): void {
-		if (this.error) throw this.error as Error;
-		if (!this.writing) {} else throw new StateError();
-		this.reading++;
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public acquireReadSync(): void {
+        if (this.available) {} else throw this.e;
+        if (!this.writing) {} else throw new StateError();
+        this.reading++;
+    }
 
-	public acquireReadTry(): void {
-		try { this.acquireReadSync(); } catch (e) {}
-	}
+    public acquireReadTry(): void {
+        try { this.acquireReadSync(); } catch (e) {}
+    }
 
-	public async acquireWrite(): Promise<void> {
-		if (this.error) throw this.error as Error;
-		const p = new Promise<void>((resolve, reject) => {
-			this.writers.push({resolve, reject});
-		});
-		this.flush();
-		await p;
-	}
+    public async acquireWrite(): Promise<void> {
+        if (this.available) {} else throw this.e;
+        const pwr = Promise.withResolvers<void>();
+        this.writers.push(pwr);
+        this.flush();
+        await pwr.promise;
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public acquireWriteSync(): void {
-		if (this.error) throw this.error as Error;
-		if (!this.writing && !this.reading) {} else throw new StateError();
-		this.writing = true;
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public acquireWriteSync(): void {
+        if (this.available) {} else throw this.e;
+        if (!this.writing && !this.reading) {} else throw new StateError();
+        this.writing = true;
+    }
 
-	public acquireWriteTry(): void {
-		try { this.acquireWriteSync(); } catch (e) {}
-	}
+    public acquireWriteTry(): void {
+        try {
+            this.acquireWriteSync();
+        } catch (e) {
+            if (e instanceof StateError) {} else throw e;
+        }
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public releaseRead(): void {
-		if (this.error) throw this.error as Error;
-		if (this.reading) {} else throw new StateError();
-		this.reading--;
-		this.flush();
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public releaseRead(): void {
+        if (this.available) {} else throw this.e;
+        if (this.reading) {} else throw new StateError();
+        this.reading--;
+        this.flush();
+    }
 
-	public releaseReadTry(): void {
-		try { this.releaseRead(); } catch (e) {}
-	}
+    public releaseReadTry(): void {
+        try {
+            this.releaseRead();
+        } catch (e) {
+            if (e instanceof StateError) {} else throw e;
+        }
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public releaseWrite(): void {
-		if (this.error) throw this.error as Error;
-		if (this.writing) {} else throw new StateError();
-		this.writing = false;
-		this.flush();
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public releaseWrite(): void {
+        if (this.available) {} else throw this.e;
+        if (this.writing) {} else throw new StateError();
+        this.writing = false;
+        this.flush();
+    }
 
-	public releaseWriteTry(): void {
-		try { this.releaseWrite(); } catch (e) {}
-	}
+    public releaseWriteTry(): void {
+        try {
+            this.releaseWrite();
+        } catch (e) {
+            if (e instanceof StateError) {} else throw e;
+        }
+    }
 
-	public throw(error: Error): void {
-		this.error = error;
-		for (const consumer of this.readers) consumer.reject(error);
-		for (const consumer of this.writers) consumer.reject(error);
-	}
+    public throw(e: unknown): void {
+        this.available = false;
+        this.e = e;
+        for (const resolver of this.readers) resolver.reject(e);
+        for (const resolver of this.writers) resolver.reject(e);
+    }
 
-	/**
-	 * @throws {@link Failure}
-	 */
-	public switch(): void {
-		if (this.error) throw this.error as Error;
-		if (this.writing) {} else throw new StateError();
-		this.writing = false;
-		this.reading = 1;
-		this.flush();
-	}
+    /**
+     * @throws {@link StateError}
+     */
+    public switch(): void {
+        if (this.available) {} else throw this.e;
+        if (this.writing) {} else throw new StateError();
+        this.writing = false;
+        this.reading = 1;
+        this.flush();
+    }
 
-	protected abstract flush(): void;
+    protected abstract flush(): void;
 }
