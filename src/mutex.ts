@@ -1,5 +1,5 @@
-import { Semaphore } from './semaphore.js';
-import { StateError } from './failure.js';
+import { Semaphore } from './semaphore.ts';
+import { StateError } from './failure.ts';
 
 
 export class Mutex {

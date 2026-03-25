@@ -3,7 +3,7 @@
 
 	因此不能简单地实现各种方法的同步版本。
 */
-import { Semaphore } from './semaphore.js';
+import { Semaphore } from './semaphore.ts';
 
 
 export class FiniteSemaphore {

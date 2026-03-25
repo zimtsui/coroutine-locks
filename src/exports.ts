@@ -1,7 +1,7 @@
-export * from './mutex.js';
-export * from './rwlock.js';
-export * from './wrlock.js';
-export * from './semaphore.js';
-export * from './condition-variable.js';
-export * from './finite-semaphore.js';
+export * from './mutex.ts';
+export * from './rwlock.ts';
+export * from './wrlock.ts';
+export * from './semaphore.ts';
+export * from './condition-variable.ts';
+export * from './finite-semaphore.ts';
 export { StateError as Failure } from './failure.js'

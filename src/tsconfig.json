@@ -2,16 +2,24 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"module": "preserve",
-		"lib": [
-			"esnext"
-		],
+		"moduleDetection": "force",
+		"lib": ["esnext", "dom"],
 		"sourceMap": true,
 		"strict": true,
 		"experimentalDecorators": true,
+		"noUncheckedIndexedAccess": true,
+		"noUncheckedSideEffectImports": true,
 		"allowSyntheticDefaultImports": true,
+		"rewriteRelativeImportExtensions": true,
+		"allowJs": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"resolveJsonModule": true,
+		"verbatimModuleSyntax": true,
+		"checkJs": true,
 		"composite": true,
-		"rootDir": ".",
-		"outDir": "../build"
+		"outDir": "../build",
+		"skipLibCheck": true
 	},
 	"include": [
 		"./**/*",

@@ -1,4 +1,4 @@
-import { RWLockBase } from './rwlock-base.js';
+import { RWLockBase } from './rwlock-base.ts';
 
 
 /**

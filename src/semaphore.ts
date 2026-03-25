@@ -1,5 +1,5 @@
-import { StateError } from './failure.js';
-import { Consumer } from './consumer.js';
+import { StateError } from './failure.ts';
+import { Consumer } from './consumer.ts';
 
 
 

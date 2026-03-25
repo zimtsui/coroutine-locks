@@ -1,4 +1,4 @@
-import { Consumer } from './consumer.js';
+import { Consumer } from './consumer.ts';
 
 
 export class ConditionVariable {
