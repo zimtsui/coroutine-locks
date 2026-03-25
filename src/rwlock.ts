@@ -8,7 +8,7 @@ export class RWLock extends RWLockBase {
     protected flush(): void {
         if (!this.writing && this.readers.length) {
             this.reading += this.readers.length;
-            for (const consumer of this.readers) consumer.resolve();
+            for (const reader of this.readers) reader.resolve();
             this.readers = [];
         } else if (!this.reading && !this.writing && this.writers.length) {
             this.writing = true;

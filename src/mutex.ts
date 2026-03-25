@@ -27,7 +27,7 @@ export class Mutex<T> implements AsyncIterableIterator<T, never, void> {
      * @throws {@link StateError}
      */
     public release(x: T): void {
-        if (!this.isAcquired()) {} else throw new StateError();
+        if (this.isAcquired()) {} else throw new StateError();
         this.sem.increase(x);
     }
 

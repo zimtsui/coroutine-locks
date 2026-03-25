@@ -24,5 +24,6 @@ export class ConditionVariable<T> {
 
 	public unblock(e: unknown): void {
 		for (const listener of this.listeners) listener.reject(e);
+		this.listeners = [];
 	}
 }

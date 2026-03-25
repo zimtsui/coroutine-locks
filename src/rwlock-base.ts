@@ -98,6 +98,8 @@ export abstract class RWLockBase {
     public unblock(e: unknown): void {
         for (const resolver of this.readers) resolver.reject(e);
         for (const resolver of this.writers) resolver.reject(e);
+        this.readers = [];
+        this.writers = [];
     }
 
     /**
