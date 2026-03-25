@@ -50,11 +50,16 @@ export class Semaphore<T> implements AsyncGenerator<T, void, void>, Disposable {
         for (const resolver of this.resolvers) resolver.reject(new Disposed());
     }
 
-    public async next(): Promise<IteratorYieldResult<T>> {
-        return {
-            done: false,
-            value: await this.decrease(),
-        };
+    public async next(): Promise<IteratorResult<T>> {
+        try {
+            return {
+                done: false,
+                value: await this.decrease(),
+            };
+        } catch (e) {
+            if (e instanceof Disposed) {} else throw e;
+            return { done: true, value: void undefined };
+        }
     }
 
     public async throw(e: unknown): Promise<never> {

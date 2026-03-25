@@ -49,11 +49,8 @@ export class Mutex<T> implements AsyncGenerator<T, void, void>, Disposable {
         return this.sem.throw(e);
     }
 
-    public async next(): Promise<IteratorYieldResult<T>> {
-        return {
-            done: false,
-            value: await this.acquire(),
-        };
+    public next(): Promise<IteratorResult<T>> {
+        return this.sem.next();
     }
 
     public return(): Promise<IteratorReturnResult<void>> {

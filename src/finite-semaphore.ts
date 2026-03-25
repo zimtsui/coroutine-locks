@@ -74,12 +74,17 @@ export class FiniteSemaphore<T> implements AsyncGenerator<T, void, void>, Dispos
         return this[Symbol.dispose]();
     }
 
-    public async next(): Promise<IteratorYieldResult<T>> {
+    public async next(): Promise<IteratorResult<T>> {
         if (this.available) {} else throw this.e;
-        return {
-            done: false,
-            value: await this.decrease(),
-        };
+        try {
+            return {
+                done: false,
+                value: await this.decrease(),
+            };
+        } catch (e) {
+            if (e instanceof Disposed) {} else throw e;
+            return { done: true, value: void undefined };
+        }
     }
 
     public async throw(e: unknown): Promise<never> {
