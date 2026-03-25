@@ -20,6 +20,7 @@ declare function readHistoryEvents(): Promise<Event[]>;
 declare const ongoingEventTarget: EventTarget;
 
 export default async function *getEvents(): AsyncGenerator<Event, void, void> {
+    // buffer.signal is triggered when the buffer[Symbol.dispose]() is called.
     using buffer = new EventBuffer<Event>();
     ongoingEventTarget.addEventListener('event', event => buffer.push(event), { signal: buffer.signal });
     yield *await readHistoryEvents();
