@@ -19,10 +19,10 @@ export class FiniteSemaphore<T> implements AsyncIterableIterator<T, never, void>
     }
 
     protected flush(): void {
-        if (this.queue.length && this.consumers.length)
+        if (this.queue.length && this.consumers.length) {
             this.consumers.shift()!.resolve(this.queue.shift()!);
-        if (this.queue.length < this.capacity && this.producers.length)
-            this.producers.shift()!.resolve();
+            if (this.producers.length) this.producers.shift()!.resolve();
+        }
     }
 
     public async decrease(): Promise<T> {
