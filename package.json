@@ -11,8 +11,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test:clean": "rm -rf ./test/build",
+    "test": "rm -rf ./test/build && tsc -b ./test/src/tsconfig.json && ava ./test/build/**/*.js",
     "build": "tsc -b ./src/tsconfig.json",
     "clean": "rm -rf ./build",
     "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts",
