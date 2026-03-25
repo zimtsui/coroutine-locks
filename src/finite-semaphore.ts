@@ -65,6 +65,7 @@ export class FiniteSemaphore<T> implements AsyncIterableIterator<T, never, void>
         for (const producer of this.producers) producer.reject(e);
         this.consumers = [];
         this.producers = [];
+        this.queue = this.queue.slice(0, this.capacity);
     }
 
     public [Symbol.asyncIterator]() {
