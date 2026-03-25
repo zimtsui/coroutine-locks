@@ -2,8 +2,7 @@ import { Semaphore } from './semaphore.ts';
 import { StateError } from './exceptions.ts';
 
 
-
-export class Mutex<T> implements AsyncGenerator<T, void, void>, Disposable {
+export class Mutex<T> implements AsyncIterableIterator<T, never, void> {
     protected sem = new Semaphore<T>();
 
     public isAcquired(): boolean {
@@ -37,24 +36,12 @@ export class Mutex<T> implements AsyncGenerator<T, void, void>, Disposable {
         }
     }
 
-    public [Symbol.dispose](): void {
-        return this.sem[Symbol.dispose]();
+    public unblock(e: unknown): void {
+        return this.sem.unblock(e);
     }
 
-    public [Symbol.asyncDispose](): Promise<void> {
-        return this.sem[Symbol.asyncDispose]();
-    }
-
-    public throw(e: unknown): Promise<never> {
-        return this.sem.throw(e);
-    }
-
-    public next(): Promise<IteratorResult<T>> {
+    public next(): Promise<IteratorYieldResult<T>> {
         return this.sem.next();
-    }
-
-    public return(): Promise<IteratorReturnResult<void>> {
-        return this.sem.return();
     }
 
     public [Symbol.asyncIterator]() {

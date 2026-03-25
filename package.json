@@ -2,7 +2,10 @@
   "name": "@zimtsui/coroutine-locks",
   "version": "0.0.25",
   "description": "",
-  "exports": "./build/index.js",
+  "exports": {
+    ".": "./build/exports.js",
+    "./buffering": "./build/buffering.js"
+  },
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -10,8 +13,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b ./src/tsconfig.json",
-    "clean": "rm -rf ./build && rm -rf ./docs",
-    "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts"
+    "clean": "rm -rf ./build",
+    "docs:build": "typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts",
+    "docs:clean": "rm -rf ./docs",
+    "prepublishOnly": "npm run clean && npm run build && npm run docs:clean && npm run docs:build"
   },
   "repository": {
     "type": "git",

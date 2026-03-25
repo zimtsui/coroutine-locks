@@ -1,26 +1,21 @@
-import { Disposed, StateError } from './exceptions.ts';
+import { StateError } from './exceptions.ts';
 
 
-export abstract class RWLockBase implements Disposable {
+export abstract class RWLockBase {
     protected readers: PromiseWithResolvers<void>[] = [];
     protected writers: PromiseWithResolvers<void>[] = [];
     protected reading = 0;
     protected writing = false;
-    protected e: unknown = new Disposed();
-    protected available = true;
 
     public isAcquiredRead(): boolean {
-        if (this.available) {} else throw this.e;
         return !!this.reading;
     }
 
     public isAcquiredWrite(): boolean {
-        if (this.available) {} else throw this.e;
         return this.writing;
     }
 
     public async acquireRead(): Promise<void> {
-        if (this.available) {} else throw this.e;
         const pwr = Promise.withResolvers<void>();
         this.readers.push(pwr);
         this.flush();
@@ -31,7 +26,6 @@ export abstract class RWLockBase implements Disposable {
      * @throws {@link StateError}
      */
     public acquireReadSync(): void {
-        if (this.available) {} else throw this.e;
         if (!this.writing) {} else throw new StateError();
         this.reading++;
     }
@@ -45,7 +39,6 @@ export abstract class RWLockBase implements Disposable {
     }
 
     public async acquireWrite(): Promise<void> {
-        if (this.available) {} else throw this.e;
         const pwr = Promise.withResolvers<void>();
         this.writers.push(pwr);
         this.flush();
@@ -56,7 +49,6 @@ export abstract class RWLockBase implements Disposable {
      * @throws {@link StateError}
      */
     public acquireWriteSync(): void {
-        if (this.available) {} else throw this.e;
         if (!this.writing && !this.reading) {} else throw new StateError();
         this.writing = true;
     }
@@ -73,7 +65,6 @@ export abstract class RWLockBase implements Disposable {
      * @throws {@link StateError}
      */
     public releaseRead(): void {
-        if (this.available) {} else throw this.e;
         if (this.reading) {} else throw new StateError();
         this.reading--;
         this.flush();
@@ -91,7 +82,6 @@ export abstract class RWLockBase implements Disposable {
      * @throws {@link StateError}
      */
     public releaseWrite(): void {
-        if (this.available) {} else throw this.e;
         if (this.writing) {} else throw new StateError();
         this.writing = false;
         this.flush();
@@ -105,24 +95,15 @@ export abstract class RWLockBase implements Disposable {
         }
     }
 
-    public [Symbol.dispose](): void {
-        if (this.available) {} else throw this.e;
-        this.available = false;
-        for (const resolver of this.readers) resolver.reject(this.e);
-        for (const resolver of this.writers) resolver.reject(this.e);
-    }
-
-    public throw(e: unknown): void {
-        this.e = e;
-        this[Symbol.dispose]();
-        throw e;
+    public unblock(e: unknown): void {
+        for (const resolver of this.readers) resolver.reject(e);
+        for (const resolver of this.writers) resolver.reject(e);
     }
 
     /**
      * @throws {@link StateError}
      */
     public switch(): void {
-        if (this.available) {} else throw this.e;
         if (this.writing) {} else throw new StateError();
         this.writing = false;
         this.reading = 1;
