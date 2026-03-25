@@ -8,8 +8,11 @@ export class ConditionVariable {
 		mutex.release();
 		const pwr = Promise.withResolvers<void>();
 		this.listeners.push(pwr);
-		await pwr.promise;
-		await mutex.acquire();
+		try {
+			await pwr.promise;
+		} finally {
+			await mutex.acquire();
+		}
 	}
 
 	public signal(): void {

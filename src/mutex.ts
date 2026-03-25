@@ -32,11 +32,7 @@ export class Mutex<T> implements AsyncIterableIterator<T, never, void> {
     }
 
     public releaseTry(x: T): void {
-        try {
-            this.release(x);
-        } catch (e) {
-            if (e instanceof StateError) {} else throw e;
-        }
+        if (this.isAcquired()) this.release(x);
     }
 
     public unblock(e: unknown): void {
