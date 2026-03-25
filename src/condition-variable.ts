@@ -1,24 +1,24 @@
+import type { Mutex } from './mutex.ts';
 
 
-export class ConditionVariable<T> {
-	protected listeners: PromiseWithResolvers<T>[] = [];
+export class ConditionVariable {
+	protected listeners: PromiseWithResolvers<void>[] = [];
 
-	/**
-	 * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
-	 */
-	public async wait(): Promise<T> {
-		const pwr = Promise.withResolvers<T>();
+	public async wait(mutex: Mutex<void>): Promise<void> {
+		mutex.release();
+		const pwr = Promise.withResolvers<void>();
 		this.listeners.push(pwr);
-		return await pwr.promise;
+		await pwr.promise;
+		await mutex.acquire();
 	}
 
-	public signal(x: T): void {
+	public signal(): void {
 		if (this.listeners.length)
-			this.listeners.shift()!.resolve(x);
+			this.listeners.shift()!.resolve();
 	}
 
-	public broadcast(x: T): void {
-		for (const listener of this.listeners) listener.resolve(x);
+	public broadcast(): void {
+		for (const listener of this.listeners) listener.resolve();
 		this.listeners = [];
 	}
 
