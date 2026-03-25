@@ -1,1 +1,1 @@
-export class Failure extends Error { }
+export class StateError {}

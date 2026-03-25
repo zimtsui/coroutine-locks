@@ -1,6 +1,5 @@
-import { Failure } from './failure.js';
+import { StateError } from './failure.js';
 import { Consumer } from './consumer.js';
-import assert from 'assert';
 
 
 export abstract class RWLockBase {
@@ -11,17 +10,17 @@ export abstract class RWLockBase {
 	protected error: Error | null = null;
 
 	public isAcquiredRead(): boolean {
-		assert(!this.error, this.error as Error);
+		if (this.error) throw this.error as Error;
 		return !!this.reading;
 	}
 
 	public isAcquiredWrite(): boolean {
-		assert(!this.error, this.error as Error);
+		if (this.error) throw this.error as Error;
 		return this.writing;
 	}
 
 	public async acquireRead(): Promise<void> {
-		assert(!this.error, this.error as Error);
+		if (this.error) throw this.error as Error;
 		const p = new Promise<void>((resolve, reject) => {
 			this.readers.push({resolve, reject});
 		});
@@ -33,8 +32,8 @@ export abstract class RWLockBase {
 	 * @throws {@link Failure}
 	 */
 	public acquireReadSync(): void {
-		assert(!this.error, this.error as Error);
-		assert(!this.writing, new Failure());
+		if (this.error) throw this.error as Error;
+		if (!this.writing) {} else throw new StateError();
 		this.reading++;
 	}
 
@@ -43,7 +42,7 @@ export abstract class RWLockBase {
 	}
 
 	public async acquireWrite(): Promise<void> {
-		assert(!this.error, this.error as Error);
+		if (this.error) throw this.error as Error;
 		const p = new Promise<void>((resolve, reject) => {
 			this.writers.push({resolve, reject});
 		});
@@ -55,8 +54,8 @@ export abstract class RWLockBase {
 	 * @throws {@link Failure}
 	 */
 	public acquireWriteSync(): void {
-		assert(!this.error, this.error as Error);
-		assert(!this.writing && !this.reading, new Failure());
+		if (this.error) throw this.error as Error;
+		if (!this.writing && !this.reading) {} else throw new StateError();
 		this.writing = true;
 	}
 
@@ -68,8 +67,8 @@ export abstract class RWLockBase {
 	 * @throws {@link Failure}
 	 */
 	public releaseRead(): void {
-		assert(!this.error, this.error as Error);
-		assert(this.reading, new Failure());
+		if (this.error) throw this.error as Error;
+		if (this.reading) {} else throw new StateError();
 		this.reading--;
 		this.flush();
 	}
@@ -82,8 +81,8 @@ export abstract class RWLockBase {
 	 * @throws {@link Failure}
 	 */
 	public releaseWrite(): void {
-		assert(!this.error, this.error as Error);
-		assert(this.writing, new Failure());
+		if (this.error) throw this.error as Error;
+		if (this.writing) {} else throw new StateError();
 		this.writing = false;
 		this.flush();
 	}
@@ -102,8 +101,8 @@ export abstract class RWLockBase {
 	 * @throws {@link Failure}
 	 */
 	public switch(): void {
-		assert(!this.error, this.error as Error);
-		assert(this.writing, new Failure());
+		if (this.error) throw this.error as Error;
+		if (this.writing) {} else throw new StateError();
 		this.writing = false;
 		this.reading = 1;
 		this.flush();

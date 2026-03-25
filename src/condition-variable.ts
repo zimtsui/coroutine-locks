@@ -1,5 +1,4 @@
 import { Consumer } from './consumer.js';
-import assert from 'assert';
 
 
 export class ConditionVariable {
@@ -10,20 +9,20 @@ export class ConditionVariable {
 	 * In JavaScript [cooperative multi-coroutine scheduling](https://en.wikipedia.org/wiki/Cooperative_multitasking), a mutex is optional because event loop cannot be switched between the condition checking and the `wait`.
 	 */
 	public async wait(): Promise<void> {
-		assert(!this.error, <Error>this.error);
+		if (this.error) throw this.error as Error;
 		await new Promise<void>((resolve, reject) => {
 			this.listeners.push({resolve, reject});
 		});
 	}
 
 	public signal(): void {
-		assert(!this.error, <Error>this.error);
+		if (this.error) throw this.error as Error;
 		if (this.listeners.length)
 			this.listeners.shift()!.resolve();
 	}
 
 	public broadcast(): void {
-		assert(!this.error, <Error>this.error);
+		if (this.error) throw this.error as Error;
 		for (const listener of this.listeners) listener.resolve();
 		this.listeners = [];
 	}

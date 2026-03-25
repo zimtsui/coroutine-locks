@@ -3,7 +3,6 @@
 
 	因此不能简单地实现各种方法的同步版本。
 */
-import assert from 'assert';
 import { Semaphore } from './semaphore.js';
 
 
@@ -12,9 +11,9 @@ export class FiniteSemaphore {
 	private free: Semaphore;
 
 	public constructor(capacity: number, size = 0) {
-		assert(Number.isInteger(capacity) && capacity >= 0);
-		assert(Number.isInteger(size) && size >= 0);
-		assert(size <= capacity);
+		if (Number.isInteger(capacity) && capacity >= 0) {} else throw new Error();
+		if (Number.isInteger(size) && size >= 0) {} else throw new Error();
+		if (size <= capacity) {} else throw new Error();
 		this.used = new Semaphore(size);
 		this.free = new Semaphore(capacity - size);
 	}

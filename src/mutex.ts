@@ -1,5 +1,5 @@
 import { Semaphore } from './semaphore.js';
-import { Failure } from './failure.js';
+import { StateError } from './failure.js';
 
 
 export class Mutex {
@@ -31,7 +31,7 @@ export class Mutex {
 		if (this.isAcquired())
 			this.sem.increase();
 		else
-			throw new Failure();
+			throw new StateError();
 	}
 
 	public releaseTry(): void {
