@@ -1,12 +1,14 @@
+import { Disposed } from './exceptions.ts';
 import { Mutex } from './mutex.ts';
 import { Semaphore } from './semaphore.ts';
-import { Disposed } from './exceptions.ts';
 
 
-export class FiniteSemaphore<T> {
+export class FiniteSemaphore<T> implements AsyncGenerator<T, void, void>, Disposable {
     protected used: Semaphore<T>;
     protected free: Semaphore<void>;
     protected lock = new Mutex<void>();
+    protected available = true;
+    protected e: unknown = new Disposed();
 
     public constructor(capacity: number) {
         if (Number.isSafeInteger(capacity) && capacity >= 0) {} else throw new Error();
@@ -16,6 +18,7 @@ export class FiniteSemaphore<T> {
     }
 
     public async getSize(): Promise<number> {
+        if (this.available) {} else throw this.e;
         await this.lock.acquire();
         try {
             return this.used.getSize();
@@ -25,6 +28,7 @@ export class FiniteSemaphore<T> {
     }
 
     public async decrease(): Promise<T> {
+        if (this.available) {} else throw this.e;
         await this.lock.acquire();
         try {
             const x = await this.used.decrease();
@@ -36,12 +40,14 @@ export class FiniteSemaphore<T> {
     }
 
     public decreaseSync(): T {
+        if (this.available) {} else throw this.e;
         const x = this.used.decreaseSync();
         this.free.increase();
         return x;
     }
 
     public async increase(x: T): Promise<void> {
+        if (this.available) {} else throw this.e;
         await this.lock.acquire();
         try {
             await this.free.decrease();
@@ -52,16 +58,41 @@ export class FiniteSemaphore<T> {
     }
 
     public increaseSync(x: T): void {
+        if (this.available) {} else throw this.e;
         this.free.decreaseSync();
         this.used.increase(x);
     }
 
     public [Symbol.dispose](): void {
-        this.throw(new Disposed());
+        if (this.available) {} else throw this.e;
+        this.available = false;
+        this.used[Symbol.dispose]();
+        this.free[Symbol.dispose]();
     }
 
-    public throw(e: unknown): void {
-        this.used.throw(e);
-        this.free.throw(e);
+    public async [Symbol.asyncDispose](): Promise<void> {
+        return this[Symbol.dispose]();
+    }
+
+    public async next(): Promise<IteratorYieldResult<T>> {
+        if (this.available) {} else throw this.e;
+        return {
+            done: false,
+            value: await this.decrease(),
+        };
+    }
+
+    public async throw(e: unknown): Promise<never> {
+        this.e = e;
+        this[Symbol.dispose]();
+        throw e;
+    }
+
+    public async return(): Promise<IteratorReturnResult<void>> {
+        return { done: true, value: this[Symbol.dispose]() };
+    }
+
+    public [Symbol.asyncIterator]() {
+        return this;
     }
 }

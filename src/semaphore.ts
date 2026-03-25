@@ -1,12 +1,11 @@
 import { Disposed, StateError } from './exceptions.ts';
 
 
-
-export class Semaphore<T> {
+export class Semaphore<T> implements AsyncGenerator<T, void, void>, Disposable {
     protected resolvers: PromiseWithResolvers<T>[] = [];
     protected queue: T[] = [];
-    protected e: unknown;
     protected available = true;
+    protected e: unknown = new Disposed();
 
     protected flush(): void {
         if (this.queue.length && this.resolvers.length)
@@ -14,6 +13,7 @@ export class Semaphore<T> {
     }
 
     public getSize(): number {
+        if (this.available) {} else throw this.e;
         return this.queue.length;
     }
 
@@ -40,13 +40,34 @@ export class Semaphore<T> {
         this.flush();
     }
 
-    public [Symbol.dispose](): void {
-        this.throw(new Disposed());
+    public async [Symbol.asyncDispose](): Promise<void> {
+        return this[Symbol.dispose]();
     }
 
-    public throw(e: unknown): void {
+    public [Symbol.dispose](): void {
+        if (this.available) {} else throw this.e;
         this.available = false;
+        for (const resolver of this.resolvers) resolver.reject(new Disposed());
+    }
+
+    public async next(): Promise<IteratorYieldResult<T>> {
+        return {
+            done: false,
+            value: await this.decrease(),
+        };
+    }
+
+    public async throw(e: unknown): Promise<never> {
         this.e = e;
-        for (const resolver of this.resolvers) resolver.reject(e);
+        this[Symbol.dispose]();
+        throw e;
+    }
+
+    public async return(): Promise<IteratorReturnResult<void>> {
+        return { done: true, value: this[Symbol.dispose]() };
+    }
+
+    public [Symbol.asyncIterator]() {
+        return this;
     }
 }

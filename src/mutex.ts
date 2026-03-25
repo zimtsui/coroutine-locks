@@ -1,18 +1,17 @@
 import { Semaphore } from './semaphore.ts';
-import { Disposed, StateError } from './exceptions.ts';
+import { StateError } from './exceptions.ts';
 
 
 
-export class Mutex<T> {
+export class Mutex<T> implements AsyncGenerator<T, void, void>, Disposable {
     protected sem = new Semaphore<T>();
-
 
     public isAcquired(): boolean {
         return !this.sem.getSize();
     }
 
-    public async acquire(): Promise<T> {
-        return await this.sem.decrease();
+    public acquire(): Promise<T> {
+        return this.sem.decrease();
     }
 
     /**
@@ -39,10 +38,29 @@ export class Mutex<T> {
     }
 
     public [Symbol.dispose](): void {
-        this.throw(new Disposed());
+        return this.sem[Symbol.dispose]();
     }
 
-    public throw(e: unknown): void {
-        this.sem.throw(e);
+    public [Symbol.asyncDispose](): Promise<void> {
+        return this.sem[Symbol.asyncDispose]();
+    }
+
+    public throw(e: unknown): Promise<never> {
+        return this.sem.throw(e);
+    }
+
+    public async next(): Promise<IteratorYieldResult<T>> {
+        return {
+            done: false,
+            value: await this.acquire(),
+        };
+    }
+
+    public return(): Promise<IteratorReturnResult<void>> {
+        return this.sem.return();
+    }
+
+    public [Symbol.asyncIterator]() {
+        return this;
     }
 }

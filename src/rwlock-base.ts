@@ -1,12 +1,12 @@
 import { Disposed, StateError } from './exceptions.ts';
 
 
-export abstract class RWLockBase {
+export abstract class RWLockBase implements Disposable {
     protected readers: PromiseWithResolvers<void>[] = [];
     protected writers: PromiseWithResolvers<void>[] = [];
     protected reading = 0;
     protected writing = false;
-    protected e: unknown;
+    protected e: unknown = new Disposed();
     protected available = true;
 
     public isAcquiredRead(): boolean {
@@ -37,7 +37,11 @@ export abstract class RWLockBase {
     }
 
     public acquireReadTry(): void {
-        try { this.acquireReadSync(); } catch (e) {}
+        try {
+            this.acquireReadSync();
+        } catch (e) {
+            if (e instanceof StateError) {} else throw e;
+        }
     }
 
     public async acquireWrite(): Promise<void> {
@@ -102,14 +106,16 @@ export abstract class RWLockBase {
     }
 
     public [Symbol.dispose](): void {
-        this.throw(new Disposed());
+        if (this.available) {} else throw this.e;
+        this.available = false;
+        for (const resolver of this.readers) resolver.reject(this.e);
+        for (const resolver of this.writers) resolver.reject(this.e);
     }
 
     public throw(e: unknown): void {
-        this.available = false;
         this.e = e;
-        for (const resolver of this.readers) resolver.reject(e);
-        for (const resolver of this.writers) resolver.reject(e);
+        this[Symbol.dispose]();
+        throw e;
     }
 
     /**
