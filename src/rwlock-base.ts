@@ -27,13 +27,7 @@ export abstract class RWLockBase {
      */
     public abstract acquireReadSync(): void;
 
-    public acquireReadTry(): void {
-        try {
-            this.acquireReadSync();
-        } catch (e) {
-            if (e instanceof StateError) {} else throw e;
-        }
-    }
+    public abstract acquireReadTry(): void;
 
     public async acquireWrite(): Promise<void> {
         const pwr = Promise.withResolvers<void>();
@@ -51,11 +45,7 @@ export abstract class RWLockBase {
     }
 
     public acquireWriteTry(): void {
-        try {
-            this.acquireWriteSync();
-        } catch (e) {
-            if (e instanceof StateError) {} else throw e;
-        }
+        if (!this.writing && !this.reading) this.writing = true;
     }
 
     /**
@@ -68,10 +58,9 @@ export abstract class RWLockBase {
     }
 
     public releaseReadTry(): void {
-        try {
-            this.releaseRead();
-        } catch (e) {
-            if (e instanceof StateError) {} else throw e;
+        if (this.reading) {
+            this.reading--;
+            this.flush();
         }
     }
 
@@ -85,10 +74,9 @@ export abstract class RWLockBase {
     }
 
     public releaseWriteTry(): void {
-        try {
-            this.releaseWrite();
-        } catch (e) {
-            if (e instanceof StateError) {} else throw e;
+        if (this.writing) {
+            this.writing = false;
+            this.flush();
         }
     }
 

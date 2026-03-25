@@ -21,4 +21,8 @@ export class WRLock extends RWLockBase {
         if (!this.writing && !this.writers.length) {} else throw new StateError();
         this.reading++;
     }
+
+    public override acquireReadTry(): void {
+        if (!this.writing && !this.writers.length) this.reading++;
+    }
 }
