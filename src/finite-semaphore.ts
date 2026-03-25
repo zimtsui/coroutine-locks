@@ -11,6 +11,7 @@ export class FiniteSemaphore<T> implements AsyncIterableIterator<T, never, void>
         if (Number.isSafeInteger(capacity) && capacity >= 0) {} else throw new Error();
         this.used = new Semaphore();
         this.free = new Semaphore();
+        this.lock.release();
         for (let i = 0; i < capacity; i++) this.free.increase();
     }
 

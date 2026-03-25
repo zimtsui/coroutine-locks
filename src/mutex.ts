@@ -2,6 +2,9 @@ import { Semaphore } from './semaphore.ts';
 import { StateError } from './exceptions.ts';
 
 
+/**
+ * A mutex is initially locked.
+ */
 export class Mutex<T> implements AsyncIterableIterator<T, never, void> {
     protected sem = new Semaphore<T>();
 
