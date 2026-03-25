@@ -1,4 +1,5 @@
 import { RWLockBase } from './rwlock-base.ts';
+import { StateError } from './exceptions.ts';
 
 
 /**
@@ -14,5 +15,10 @@ export class WRLock extends RWLockBase {
             this.writing = true;
             this.writers.shift()!.resolve();
         }
+    }
+
+    public override acquireReadSync(): void {
+        if (!this.writing && !this.writers.length) {} else throw new StateError();
+        this.reading++;
     }
 }

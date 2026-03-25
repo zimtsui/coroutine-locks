@@ -25,10 +25,7 @@ export abstract class RWLockBase {
     /**
      * @throws {@link StateError}
      */
-    public acquireReadSync(): void {
-        if (!this.writing) {} else throw new StateError();
-        this.reading++;
-    }
+    public abstract acquireReadSync(): void;
 
     public acquireReadTry(): void {
         try {
