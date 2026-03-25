@@ -1,4 +1,4 @@
-import { StateError } from './exceptions.ts';
+import { Disposed, StateError } from './exceptions.ts';
 
 
 
@@ -38,6 +38,10 @@ export class Semaphore<T> {
         if (this.available) {} else throw this.e;
         this.queue.push(x);
         this.flush();
+    }
+
+    public [Symbol.dispose](): void {
+        this.throw(new Disposed());
     }
 
     public throw(e: unknown): void {

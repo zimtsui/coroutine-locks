@@ -1,5 +1,6 @@
 import { Mutex } from './mutex.ts';
 import { Semaphore } from './semaphore.ts';
+import { Disposed } from './exceptions.ts';
 
 
 export class FiniteSemaphore<T> {
@@ -53,6 +54,10 @@ export class FiniteSemaphore<T> {
     public increaseSync(x: T): void {
         this.free.decreaseSync();
         this.used.increase(x);
+    }
+
+    public [Symbol.dispose](): void {
+        this.throw(new Disposed());
     }
 
     public throw(e: unknown): void {

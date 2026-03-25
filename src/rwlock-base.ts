@@ -1,4 +1,4 @@
-import { StateError } from './exceptions.ts';
+import { Disposed, StateError } from './exceptions.ts';
 
 
 export abstract class RWLockBase {
@@ -99,6 +99,10 @@ export abstract class RWLockBase {
         } catch (e) {
             if (e instanceof StateError) {} else throw e;
         }
+    }
+
+    public [Symbol.dispose](): void {
+        this.throw(new Disposed());
     }
 
     public throw(e: unknown): void {
