@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:clean": "rm -rf ./test/build",
     "build": "tsc -b ./src/tsconfig.json",
     "clean": "rm -rf ./build",
     "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts",
