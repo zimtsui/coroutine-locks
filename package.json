@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "rm -rf ./test/build && tsc -b ./test/src/tsconfig.json && ava ./test/build/**/*.js",
+    "test": "npm run build && ava ./test/test.ts",
     "build": "tsc -b ./src/tsconfig.json",
     "clean": "rm -rf ./build",
     "docs": "rm -rf ./docs && typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts",
