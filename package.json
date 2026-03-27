@@ -2,10 +2,7 @@
   "name": "@zimtsui/coroutine-locks",
   "version": "0.0.25",
   "description": "",
-  "exports": {
-    ".": "./build/exports.js",
-    "./buffering": "./build/buffering.js"
-  },
+  "exports": "./build/exports.js",
   "type": "module",
   "engines": {
     "node": ">=22"

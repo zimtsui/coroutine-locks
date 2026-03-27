@@ -1,17 +1,18 @@
-import type { Mutex } from './mutex.ts';
+import { Mutex } from './mutex.ts';
 
 
 export class ConditionVariable {
 	protected listeners: PromiseWithResolvers<void>[] = [];
+	public mutex = new Mutex<void>();
 
-	public async wait(mutex: Mutex<void>): Promise<void> {
-		mutex.release();
+	public async wait(): Promise<void> {
+		this.mutex.release();
 		const pwr = Promise.withResolvers<void>();
 		this.listeners.push(pwr);
 		try {
 			await pwr.promise;
 		} finally {
-			await mutex.acquire();
+			await this.mutex.acquire();
 		}
 	}
 
@@ -26,6 +27,7 @@ export class ConditionVariable {
 	}
 
 	public unblock(e: unknown): void {
+		this.mutex.unblock(e);
 		for (const listener of this.listeners) listener.reject(e);
 		this.listeners = [];
 	}
