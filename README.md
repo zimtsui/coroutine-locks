@@ -8,3 +8,5 @@
 -   Semaphore
 -   Condition variable
 -   Finite semaphore
+
+Mutex is initially unlocked.
