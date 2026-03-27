@@ -6,6 +6,12 @@ import { StateError } from './exceptions.ts';
  * A mutex is initially locked.
  */
 export class Mutex<T> implements AsyncIterableIterator<T, never, void> {
+    public static release(): Mutex<void> {
+        const mutex = new Mutex<void>();
+        mutex.release();
+        return mutex;
+    }
+
     protected sem = new Semaphore<T>();
 
     public isAcquired(): boolean {
