@@ -68,13 +68,13 @@ test('Mutex rejects invalid release and releaseTry ignores it', t => {
 });
 
 test('ConditionVariable wait releases then reacquires mutex', async t => {
-    const mutex = new Mutex<void>();
     const cv = new ConditionVariable();
+    const { mutex } = cv;
 
     mutex.release();
     await mutex.acquire();
 
-    const waiter = cv.wait(mutex);
+    const waiter = cv.wait();
     await Promise.resolve();
 
     t.is(mutex.isAcquired(), false);
@@ -86,13 +86,13 @@ test('ConditionVariable wait releases then reacquires mutex', async t => {
 });
 
 test('ConditionVariable reacquires mutex when unblocked with error', async t => {
-    const mutex = new Mutex<void>();
     const cv = new ConditionVariable();
+    const { mutex } = cv;
 
     mutex.release();
     await mutex.acquire();
 
-    const waiter = cv.wait(mutex);
+    const waiter = cv.wait();
     await Promise.resolve();
 
     cv.unblock('stop');
