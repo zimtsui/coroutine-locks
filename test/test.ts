@@ -7,7 +7,7 @@ import {
     Semaphore,
     StateError,
     WRLock,
-} from '@zimtsui/coroutine-locks';
+} from '@zimtsui/typelocks';
 
 
 function timeout(ms: number): Promise<'timeout'> {

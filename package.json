@@ -1,5 +1,5 @@
 {
-  "name": "@zimtsui/coroutine-locks",
+  "name": "@zimtsui/typelocks",
   "version": "0.0.27",
   "description": "",
   "exports": "./build/exports.js",
@@ -16,11 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zimtsui/coroutine-locks.git"
+    "url": "https://github.com/zimtsui/typelocks.git"
   },
   "author": "Zim",
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "ava": "^7.0.0",
+    "typedoc": "^0.28.18",
     "typescript": "^6.0.2"
   }
 }
