@@ -20,7 +20,7 @@
   },
   "author": "Zim",
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^22.19.15",
     "ava": "^7.0.0",
     "typedoc": "^0.28.18",
     "typescript": "^6.0.2"
