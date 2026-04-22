@@ -5,13 +5,12 @@
   "exports": "./build/exports.js",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "test": "npm run build && ava ./test/test.ts",
     "build": "tsc -b ./src/tsconfig.json",
     "clean": "rm -rf ./build",
-    "docs": "rm -rf ./docs && typedoc --tsconfig ./src/tsconfig.json ./src/exports.ts",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "repository": {
@@ -20,9 +19,8 @@
   },
   "author": "Zim",
   "devDependencies": {
-    "@types/node": "^22.19.15",
+    "@types/node": "^24.12.2",
     "ava": "^7.0.0",
-    "typedoc": "^0.28.18",
     "typescript": "^6.0.2"
   }
 }

@@ -1,6 +1,0 @@
-{
-	"disableSources": true,
-	"excludePrivate": true,
-	"excludeProtected": true,
-	"cleanOutputDir": true,
-}
